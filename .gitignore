@@ -19,3 +19,14 @@
 *.exe
 *.out
 *.app
+
+# OS X System Files
+.DS_Store
+
+# Qt stuff
+Makefile*
+.qmake*
+moc_*
+
+# My tests
+tests/tests
