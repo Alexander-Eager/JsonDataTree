@@ -4,6 +4,9 @@
 // for the library
 #include "JsonForwards.h"
 #include "LibraryMacros.h"
+#include "JsonArray.h"
+#include "JsonObject.h"
+#include "JsonPath.h"
 
 // superclass
 #include <QObject>
@@ -34,15 +37,12 @@ namespace JSON
 		Q_PROPERTY(Type type
 					READ getType
 					WRITE setType)
-		Q_PROPERTY(bool isInteger
-					READ isInteger
+		Q_PROPERTY(bool isNumber
+					READ isNumber
 					STORED false)
 		Q_PROPERTY(int integer
 					READ toInteger
 					WRITE setInteger)
-		Q_PROPERTY(bool isDouble
-					READ isDouble
-					STORED false)
 		Q_PROPERTY(double floating
 					READ toDouble
 					WRITE setDouble)
@@ -61,9 +61,15 @@ namespace JSON
 		Q_PROPERTY(bool isArray
 					READ isArray
 					STORED false)
+		Q_PROPERTY(JsonArray array
+					READ toArray
+					WRITE setArray)
 		Q_PROPERTY(bool isObject
 					READ isObject
 					STORED false)
+		Q_PROPERTY(JsonObject object
+					READ toObject
+					WRITE setObject)
 
 		public:
 			/** 
@@ -72,8 +78,7 @@ namespace JSON
 			enum Type { Array = 0,
 						Object,
 						String,
-						Integer,
-						Double,
+						Number,
 						Boolean,
 						Null };
 
@@ -92,14 +97,14 @@ namespace JSON
 			/**
 			 * \brief Make a copy of `other`.
 			 *
-			 * \param other The value to copy.
+			 * \param[in] other The value to copy.
 			 **/
 			JsonValue(const JsonValue& other);
 
 			/**
 			 * \brief Assign the value of `other` to this object.
 			 *
-			 * \param other The value to copy.
+			 * \param[in] other The value to copy.
 			 **/
 			JsonValue& operator= (const JsonValue& other);
 
@@ -238,31 +243,30 @@ namespace JSON
 			virtual bool isNull() const;
 
 			/**
-			 * \brief Determine if this is an integer value.
+			 * \brief Determine if this is a numeric value.
 			 *
 			 * \see toInteger(bool*)
+			 * \see toDouble(bool*)
 			 *
-			 * \returns `true` if this is an integer value,
+			 * \returns `true` if this is a numeric value,
 			 *			`false` otherwise.
 			 **/
-			virtual bool isInteger() const;
+			virtual bool isNumber() const;
 
 			/**
 			 * \brief Convert this value to an integer.
 			 *
-			 * If `isInteger()`, this simply returns the
-			 * proper value.
-			 *
-			 * If `isDouble()`, this casts from `double` to
-			 * `int` and returns the result, but sets
-			 * `*ok` to `false`.
+			 * If `isNumber()`, this casts the value
+			 * to an `int` and returns that value. This
+			 * also sets `*ok` to `true`.
 			 *
 			 * If this is not a numeric value, this
 			 * returns `0` and sets `*ok` to `false`.
 			 *
-			 * \see isInteger()
+			 * \see isNumber()
+			 * \see toDouble(bool*)
 			 *
-			 * \param[out] ok A flag set to `true` if `isInteger()`,
+			 * \param[out] ok A flag set to `true` if `isNumber()`,
 			 *				`false` otherwise.
 			 *
 			 * \returns This value as an integer.
@@ -270,32 +274,18 @@ namespace JSON
 			virtual int toInteger(bool* ok = nullptr) const;
 
 			/**
-			 * \brief Determine if this is a floating point
-			 *			(`double`) value.
-			 *
-			 * \see toDouble(bool*)
-			 *
-			 * \returns `true` if this is a `double` value,
-			 *			`false` otherwise.
-			 **/
-			virtual bool isDouble() const;
-
-			/**
 			 * \brief Convert this value to a `double`.
 			 *
-			 * If `isDouble()`, this simply returns the
-			 * proper value.
-			 *
-			 * If `isInteger()`, this casts from `int` to
-			 * `double` and returns the result, but sets
-			 * `*ok` to `false`.
+			 * If `isNumber()`, this simply returns the
+			 * proper value and sets `*ok` to `true`.
 			 *
 			 * If this is not a numeric value, this
 			 * returns `0` and sets `*ok` to `false`.
 			 *
-			 * \see isDouble()
+			 * \see isNumber()
+			 * \see toInteger(bool*)
 			 *
-			 * \param[out] ok A flag set to `true` if `isDouble()`,
+			 * \param[out] ok A flag set to `true` if `isNumber()`,
 			 *				`false` otherwise.
 			 *
 			 * \returns This value as a `double`.
@@ -345,10 +335,6 @@ namespace JSON
 			 *
 			 * If `isBoolean()`, this simply returns the
 			 * proper value.
-			 *
-			 * If `isInteger()` or `isDouble()`, this returns
-			 * `true` if non-zero and `false` if zero, and
-			 * sets `*ok` to `false`.
 			 *
 			 * If this is anything else, this returns `false`
 			 * and sets `*ok` to `false`.
@@ -443,6 +429,74 @@ namespace JSON
 			 * \returns This value as an object.
 			 **/
 			virtual JsonObject toObject(bool* ok = nullptr) const;
+
+			/**
+			 * \brief Get the value at the end of a path.
+			 *
+			 * If the path is not valid for this value, a `Null`
+			 * value is returned.
+			 *
+			 * \param[in] path The path to follow to the desired value.
+			 *
+			 * \returns The value at the end of `path`.
+			 **/
+			virtual JsonValue follow(JsonPath path) const;
+
+			/**
+			 * \brief Get the value at the end of a path.
+			 *
+			 * If the path is not valid for this value, a `Null`
+			 * value is returned.
+			 *
+			 * \param[in] path The path to follow to the desired value.
+			 *
+			 * \returns The value at the end of `path`.
+			 **/
+			virtual JsonValue& follow(JsonPath path);
+
+			/**
+			 * \brief Create the given path for this value.
+			 *
+			 * This creates all necessary children to make the
+			 * path viable, and returns a reference to the value
+			 * at the end of the path (which is initialized to `Null`,
+			 * if it did not already exist).
+			 *
+			 * Adding to a child object involves adding a key-value pair
+			 * to the object. Adding to an array involves adding to the
+			 * beggining or end, depending on the value of the array index
+			 * in the path. This creates an object if there is a choice
+			 * between an object key and an array index.
+			 *
+			 * `Null` values are treated in a special way: unlike `Number`,
+			 * `String`, `Boolean`, `Object`, and `Array`, `Null` values
+			 * are converted into the appropriate type. So if you have the
+			 * JSON object:
+			 *
+			 *		{
+			 *			"A": null
+			 *		}
+			 *
+			 * And you ask to create the path `{ "A", 0 }`, it will change
+			 * the tree to:
+			 *
+			 *		{
+			 *			"A": [
+			 *				null
+			 *			]
+			 *		}
+			 * 
+			 * If this value (or one of the requested children)
+			 * is not the right type (e.g., the path starts
+			 * with an array index but this is an object, or this value
+			 * is an integer and thus has no children at all), the path is
+			 * not created and a `Null` value is returned.
+			 *
+			 * \param[in] path The path to create.
+			 *
+			 * \returns The value at the end of the newly created path.
+			 **/
+			virtual JsonValue& create(JsonPath path);
 
 		private:
 			/** \brief The *d-pointer* for this object. **/

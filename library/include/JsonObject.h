@@ -93,8 +93,18 @@ namespace JSON
 
 			/**
 			 * \brief Make a copy of `other`.
+			 *
+			 * \param[in] other The object to copy.
 			 **/
 			JsonObject(const JsonObject& other);
+
+			/**
+			 * \brief Assign the contents of `other` to this
+			 *			object.
+			 *
+			 * \param[in] other The object to copy.
+			 **/
+			JsonObject& operator= (const JsonObject& other);
 
 			/**
 			 * \brief Get the number of key-value pairs.
@@ -122,6 +132,12 @@ namespace JSON
 			virtual bool isEmpty() const;
 
 			/**
+			 * \brief Remove all key-value pairs from this
+			 *			object.
+			 **/
+			virtual void clear();
+
+			/**
 			 * \brief Get the keys in this object.
 			 *
 			 * \returns The keys in this object.
@@ -135,8 +151,8 @@ namespace JSON
 			 * the associated value is replaced with
 			 * `value`.
 			 *
-			 * \param key The key for the pair.
-			 * \param value The value for the pair.
+			 * \param[in] key The key for the pair.
+			 * \param[in] value The value for the pair.
 			 *
 			 * \returns An iterator to the position with
 			 *			the key-value pair.
@@ -149,7 +165,7 @@ namespace JSON
 			 * If the key does not exist, this returns a
 			 * `Null` `JsonValue`.
 			 *
-			 * \param key The key to lookup.
+			 * \param[in] key The key to lookup.
 			 *
 			 * \returns The associated value.
 			 **/
@@ -161,7 +177,7 @@ namespace JSON
 			 * If the key does not exist, this adds the
 			 * key and associates it with a null value.
 			 *
-			 * \param key The key to lookup.
+			 * \param[in] key The key to lookup.
 			 *
 			 * \returns The associated value.
 			 **/
@@ -173,7 +189,7 @@ namespace JSON
 			 * If the key does not exist, this returns a
 			 * `Null` `JsonValue`.
 			 *
-			 * \param key The key to lookup.
+			 * \param[in] key The key to lookup.
 			 *
 			 * \returns The associated value.
 			 **/
@@ -185,7 +201,7 @@ namespace JSON
 			 * If the key does not exist, this adds the
 			 * key and associates it with a null value.
 			 *
-			 * \param key The key to lookup.
+			 * \param[in] key The key to lookup.
 			 *
 			 * \returns The associated value.
 			 **/
@@ -197,7 +213,7 @@ namespace JSON
 			 * If the key does not exist, this returns
 			 * `end()`.
 			 *
-			 * \param key The key to lookup.
+			 * \param[in] key The key to lookup.
 			 *
 			 * \returns An iterator to `key`.
 			 **/
@@ -209,7 +225,7 @@ namespace JSON
 			 * If the key does not exist, this returns
 			 * `end()`.
 			 *
-			 * \param key The key to lookup.
+			 * \param[in] key The key to lookup.
 			 *
 			 * \returns An iterator to `key`.
 			 **/
@@ -221,7 +237,7 @@ namespace JSON
 			 * If the key does not exist, this returns
 			 * `end()`.
 			 *
-			 * \param key The key to lookup.
+			 * \param[in] key The key to lookup.
 			 *
 			 * \returns An iterator to `key`.
 			 **/
@@ -231,7 +247,7 @@ namespace JSON
 			 * \brief Determine if this object has the given
 			 *			key.
 			 *
-			 * \param key The key to lookup.
+			 * \param[in] key The key to lookup.
 			 *
 			 * \returns `true` if the key was found,
 			 *			`false` otherwise.

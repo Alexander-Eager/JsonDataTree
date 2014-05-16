@@ -29,6 +29,13 @@ JsonObject::JsonObject(const JsonObject& other)
 	:	d(other.d)
 	{ }
 
+JsonObject& JsonObject::operator= (const JsonObject& other)
+{
+	if (this == &other) return *this;
+	d = other.d;
+	return *this;
+}
+
 int JsonObject::size() const
 {
 	return d->map.count();
@@ -42,6 +49,11 @@ int JsonObject::count() const
 bool JsonObject::isEmpty() const
 {
 	return !size();
+}
+
+void JsonObject::clear()
+{
+	d->map.clear();
 }
 
 QList<QString> JsonObject::keys() const

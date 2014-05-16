@@ -13,11 +13,14 @@ HEADERS += include/JsonArray.h \
            include/JsonReader.h \
            include/JsonValue.h \
            include/JsonWriter.h \
+           include/JsonPath.h \
            include/LibraryMacros.h
 SOURCES += src/JsonArray.cpp \
 		   src/JsonValue.cpp \
 		   src/JsonObject.cpp \
-		   src/JsonWriter.cpp
+		   src/JsonWriter.cpp \
+       src/JsonPath.cpp \
+		   src/JsonReader.cpp
 
 # Additional config
 DEFINES += BUILD_JSON_LIBRARY

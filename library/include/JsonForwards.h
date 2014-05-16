@@ -7,10 +7,12 @@
 namespace JSON
 {
 	// JsonReader.h
-	//class JsonReader;
+	class JsonReader;
+	class JsonReaderError;
+	class JsonReaderErrors;
 
 	// JsonWriter.h
-	//class JsonWriter;
+	class JsonWriter;
 
 	// JsonValue.h
 	class JsonValue;
@@ -20,6 +22,10 @@ namespace JSON
 
 	// JsonArray.h
 	class JsonArray;
+
+	// JsonPath.h
+	class JsonKey;
+	class JsonPath;
 }
 
 #endif // JSON_FORWARDS_H

@@ -25,11 +25,8 @@ namespace JSON
 			// write a string value to stream
 			void writeString(QTextStream& stream, QString string) const;
 
-			// write an integral value to stream
-			void writeInteger(QTextStream& stream, int integer) const;
-
-			// write a double value to stream
-			void writeDouble(QTextStream& stream, double floating) const;
+			// write a numeric value to stream
+			void writeNumber(QTextStream& stream, double number) const;
 
 			// write a boolean value to stream
 			void writeBoolean(QTextStream& stream, bool boolean) const;
@@ -110,7 +107,10 @@ void JsonWriter::writeTo(QTextStream& stream) const
 
 void JsonWriterPrivate::writeIndent(QTextStream& stream, int indent) const
 {
-	stream << QString(indent, QChar('\t'));
+	for (int i = 0; i < indent; ++ i)
+	{
+		stream << QChar('\t');	
+	}
 }
 
 void JsonWriterPrivate::writeValue(QTextStream& stream, JsonValue value,
@@ -119,11 +119,8 @@ void JsonWriterPrivate::writeValue(QTextStream& stream, JsonValue value,
 	JsonValue::Type type = value.getType();
 	switch (type)
 	{
-		case JsonValue::Integer:
-			writeInteger(stream, value.toInteger());
-			break;
-		case JsonValue::Double:
-			writeDouble(stream, value.toDouble());
+		case JsonValue::Number:
+			writeNumber(stream, value.toDouble());
 			break;
 		case JsonValue::String:
 			writeString(stream, value.toString());
@@ -143,14 +140,9 @@ void JsonWriterPrivate::writeValue(QTextStream& stream, JsonValue value,
 	}
 }
 
-void JsonWriterPrivate::writeInteger(QTextStream& stream, int integer) const
+void JsonWriterPrivate::writeNumber(QTextStream& stream, double number) const
 {
-	stream << integer;
-}
-
-void JsonWriterPrivate::writeDouble(QTextStream& stream, double floating) const
-{
-	stream << floating;
+	stream << number;
 }
 
 void JsonWriterPrivate::writeString(QTextStream& stream, QString string) const
@@ -163,7 +155,7 @@ void JsonWriterPrivate::writeString(QTextStream& stream, QString string) const
 		switch (c)
 		{
 			/* Basic escape characters */
-			case '\"': // open quote
+			case '\"': // quote
 				stream << "\\\"";
 				break;
 			case '\\': // backslash
@@ -189,7 +181,22 @@ void JsonWriterPrivate::writeString(QTextStream& stream, QString string) const
 				break;
 			/* Everything else */
 			default:
-				stream << string.at(i);
+				if (string.at(i).isPrint())
+				{
+					stream << string.at(i);
+				}
+				else
+				{
+					// not printable, and not escape,
+					// so we need to \u it
+					stream << "\\u";
+					QString hex = QString::number(c, 16);
+					while (hex.count() < 4)
+					{
+						hex = '0' + hex;
+					}
+					stream << hex;
+				}
 				break;
 		}
 		++ i;

@@ -102,7 +102,7 @@ namespace JSON
 			/**
 			 * \brief Make a copy of `other`.
 			 *
-			 * \param other The array to copy.
+			 * \param[in] other The array to copy.
 			 **/
 			JsonArray(const JsonArray& other);
 
@@ -110,7 +110,7 @@ namespace JSON
 			 * \brief Assign the contents of `other` to
 			 *			this object.
 			 *
-			 * \param other The array to copy.
+			 * \param[in] other The array to copy.
 			 **/
 			JsonArray& operator= (const JsonArray& other);
 
@@ -146,7 +146,7 @@ namespace JSON
 			/**
 			 * \brief Add a value to the end of this array.
 			 *
-			 * \param value The value to append.
+			 * \param[in] value The value to append.
 			 **/
 			virtual void append(JsonValue value);
 
@@ -175,7 +175,7 @@ namespace JSON
 			/**
 			 * \brief Add a value to the front of this array.
 			 *
-			 * \param value The value to prepend.
+			 * \param[in] value The value to prepend.
 			 **/
 			virtual void prepend(JsonValue value);
 
@@ -210,8 +210,8 @@ namespace JSON
 			 * at the end. If `index <= 0`, the value is
 			 * placed at the beginning.
 			 *
-			 * \param index The location to place the new value.
-			 * \param value The value to add.
+			 * \param[in] index The location to place the new value.
+			 * \param[in] value The value to add.
 			 **/
 			virtual void insert(int index, JsonValue value);
 
@@ -220,7 +220,7 @@ namespace JSON
 			 *
 			 * Everything after `index` moves down one spot.
 			 *
-			 * \param index The location of the removal.
+			 * \param[in] index The location of the removal.
 			 *
 			 * \returns `true` if `index` is in the bounds of
 			 *			the array, `false` otherwise.
@@ -258,8 +258,8 @@ namespace JSON
 			/**
 			 * \brief Set the value at `index`.
 			 *
-			 * \param index The location to change the value at.
-			 * \param value The new value for that location.
+			 * \param[in] index The location to change the value at.
+			 * \param[in] value The new value for that location.
 			 *
 			 * \returns `true` if `index` is within the bounds
 			 *			of the array, `false` otherwise.
@@ -324,8 +324,8 @@ Q_DECLARE_METATYPE(JSON::JsonArray)
 /**
  * \brief Append a value to the given array.
  *
- * \param array The array to append to.
- * \param value The value to append.
+ * \param[in] array The array to append to.
+ * \param[in] value The value to append.
  **/
 JSON_LIBRARY JSON::JsonArray& operator<< (JSON::JsonArray& array,
 											JSON::JsonValue value);

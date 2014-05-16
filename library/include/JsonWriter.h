@@ -48,14 +48,14 @@ namespace JSON
 			 * \brief Construct a JSON writer to
 			 *			write the given data.
 			 *
-			 * \param data The data to write out.
+			 * \param[in] data The data to write out.
 			 **/
 			JsonWriter(JsonValue data);
 
 			/**
 			 * \brief Make a copy of `other`.
 			 *
-			 * \param other The writer to copy.
+			 * \param[in] other The writer to copy.
 			 **/
 			JsonWriter(const JsonWriter& other);
 
@@ -68,7 +68,7 @@ namespace JSON
 			 * \brief Assign the data of `other` to this
 			 *			object.
 			 *
-			 * \param other The writer to copy.
+			 * \param[in] other The writer to copy.
 			 **/
 			virtual JsonWriter& operator= (const JsonWriter& other);
 
@@ -82,7 +82,7 @@ namespace JSON
 			/**
 			 * \brief Set the data that this writer writes out.
 			 *
-			 * \param data The new data to write.
+			 * \param[in] data The new data to write.
 			 **/
 			virtual void setData(JsonValue data);
 
@@ -96,21 +96,21 @@ namespace JSON
 			/**
 			 * \brief Write the data to a string.
 			 *
-			 * \param str The string to write to.
+			 * \param[out] str The string to write to.
 			 **/
 			virtual void writeTo(QString* str) const;
 
 			/**
 			 * \brief Write the data to an IO device.
 			 *
-			 * \param io The device to write to.
+			 * \param[out] io The device to write to.
 			 **/
 			virtual void writeTo(QIODevice* io) const;
 
 			/**
 			 * \brief Write the data to a text stream.
 			 *
-			 * \param stream The stream to write to.
+			 * \param[out] stream The stream to write to.
 			 **/
 			virtual void writeTo(QTextStream& stream) const;
 

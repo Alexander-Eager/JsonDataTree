@@ -1,0 +1,19 @@
+// this is one big test file
+{
+	// classic
+	"Hello": "World",
+	/* this is my name */
+	"I am": [ "Alexander", "Wayne", "Eager" ],
+	// this has absolutely nothing to do with
+	// seeing people later
+	"See you later": {
+		"Mr.": "Alligator",
+		"boolean": true,
+		"boolean 2": false,
+		"null": null,
+		"number": 109,
+		"number 2": 1.1,
+		"number 3": 1.1E-1,
+		"number 4": 1e3
+	}
+}

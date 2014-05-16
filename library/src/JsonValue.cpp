@@ -1,11 +1,11 @@
 // header file
 #include "JsonValue.h"
 
+// for path following
+#include "JsonPath.h"
+
 // internal data
 #include <QSharedData>
-#include <QVariant>
-#include "JsonObject.h"
-#include "JsonArray.h"
 
 // JsonValuePrivate internal data class
 namespace JSON
@@ -16,8 +16,7 @@ namespace JSON
 			JsonValue::Type type;
 			union
 			{
-				int integer;
-				double floating;
+				double number;
 				QString* string;
 				bool boolean;
 				JsonArray* array;
@@ -59,11 +58,8 @@ namespace JSON
 			{
 				switch (type)
 				{
-					case JsonValue::Integer:
-						integer = other.integer;
-						break;
-					case JsonValue::Double:
-						floating = other.floating;
+					case JsonValue::Number:
+						number = other.number;
 						break;
 					case JsonValue::Boolean:
 						boolean = other.boolean;
@@ -92,6 +88,7 @@ using namespace JSON;
 
 JsonArray invalidArray;
 JsonObject invalidObject;
+JsonValue invalidValueTwo;
 
 JsonValue::~JsonValue() { }
 
@@ -133,11 +130,8 @@ void JsonValue::setType(JsonValue::Type type)
 		case String:
 			d->string = new QString();
 			break;
-		case Integer:
-			d->integer = 0;
-			break;
-		case Double:
-			d->floating = 0.0;
+		case Number:
+			d->number = 0.0;
 			break;
 		case Boolean:
 			d->boolean = false;
@@ -161,8 +155,8 @@ JsonValue::JsonValue(int val)
 void JsonValue::setInteger(int val)
 {
 	d->clean();
-	d->type = Integer;
-	d->integer = val;
+	d->type = Number;
+	d->number = val;
 }
 
 JsonValue::JsonValue(double val)
@@ -174,8 +168,8 @@ JsonValue::JsonValue(double val)
 void JsonValue::setDouble(double val)
 {
 	d->clean();
-	d->type = Double;
-	d->floating = val;
+	d->type = Number;
+	d->number = val;
 }
 
 JsonValue::JsonValue(QString val)
@@ -249,48 +243,35 @@ bool JsonValue::isNull() const
 	return d->type == Null;
 }
 
-bool JsonValue::isInteger() const
+bool JsonValue::isNumber() const
 {
-	return d->type == Integer;
+	return d->type == Number;
 }
 
 int JsonValue::toInteger(bool* ok) const
 {
 	if (ok)
 	{
-		*ok = isInteger();
+		*ok = isNumber();
 	}
-	switch (d->type)
+	if (isNumber())
 	{
-		case Integer:
-			return d->integer;
-		case Double:
-			return (int) d->floating;
-		default:
-			return 0;
+		return (int) d->number;
 	}
-}
-
-bool JsonValue::isDouble() const
-{
-	return d->type == Double;
+	return 0;
 }
 
 double JsonValue::toDouble(bool* ok) const
 {
 	if (ok)
 	{
-		*ok = isDouble();
+		*ok = isNumber();
 	}
-	switch (d->type)
+	if (isNumber())
 	{
-		case Double:
-			return d->floating;
-		case Integer:
-			return (double) d->integer;
-		default:
-			return 0.0;
+		return d->number;
 	}
+	return 0.0;
 }
 
 bool JsonValue::isString() const
@@ -304,13 +285,11 @@ QString JsonValue::toString(bool* ok) const
 	{
 		*ok = isString();
 	}
-	switch (d->type)
+	if (isString())
 	{
-		case String:
-			return *d->string;
-		default:
-			return QString();
+		return *d->string;
 	}
+	return QString();
 }
 
 bool JsonValue::isBoolean() const
@@ -324,17 +303,11 @@ bool JsonValue::toBoolean(bool* ok) const
 	{
 		*ok = isBoolean();
 	}
-	switch (d->type)
+	if (isBoolean())
 	{
-		case Boolean:
-			return d->boolean;
-		case Integer:
-			return d->integer;
-		case Double:
-			return d->floating;
-		default:
-			return false;
+		return d->boolean;
 	}
+	return false;
 }
 
 bool JsonValue::isArray() const
@@ -352,6 +325,7 @@ JsonArray& JsonValue::toArray(bool* ok)
 	{
 		return *d->array;
 	}
+	invalidArray.clear();
 	return invalidArray;
 }
 
@@ -383,6 +357,7 @@ JsonObject& JsonValue::toObject(bool* ok)
 	{
 		return *d->object;
 	}
+	invalidObject.clear();
 	return invalidObject;
 }
 
@@ -397,4 +372,174 @@ JsonObject JsonValue::toObject(bool* ok) const
 		return *d->object;
 	}
 	return JsonObject();
+}
+
+JsonValue JsonValue::follow(JsonPath path) const
+{
+	JsonValue val = *this;
+	// follow down the path
+	for (auto key : path)
+	{
+		if (val.isObject())
+		{
+			if (!key.isObjectKey())
+			{
+				// not the right kind
+				invalidValueTwo = Null;
+				return invalidValueTwo;
+			}
+			// get the object and key
+			QString k = key.toObjectKey();
+			JsonObject obj = val.toObject();
+			if (!obj.contains(k))
+			{
+				// the association isn't there,
+				// so quit
+				invalidValueTwo = Null;
+				return invalidValueTwo;
+			}
+			// get the association's value
+			val = obj.get(k);
+		}
+		else if (val.isArray())
+		{
+			if (!key.isArrayIndex())
+			{
+				// not the right kind
+				invalidValueTwo = Null;
+				return invalidValueTwo;
+			}
+			// get the array and index
+			int k = key.toArrayIndex();
+			JsonArray arr = val.toArray();
+			if (k < 0 || k >= arr.count())
+			{
+				// not in range
+				invalidValueTwo = Null;
+				return invalidValueTwo;
+			}
+			// get the value at that index
+			val = arr.at(k);
+		}
+		else
+		{
+			// not an array/object
+			invalidValueTwo = Null;
+			return invalidValueTwo;
+		}
+	}
+	return val;
+}
+
+JsonValue& JsonValue::follow(JsonPath path)
+{
+	JsonValue* val = this;
+	// follow down the path
+	for (auto key : path)
+	{
+		if (val->isObject())
+		{
+			if (!key.isObjectKey())
+			{
+				// not the right kind
+				invalidValueTwo = Null;
+				return invalidValueTwo;
+			}
+			// get the object and key
+			QString k = key.toObjectKey();
+			JsonObject* obj = &val->toObject();
+			if (!obj->contains(k))
+			{
+				// the association isn't there,
+				// so quit
+				invalidValueTwo = Null;
+				return invalidValueTwo;
+			}
+			// get the association's value
+			val = &obj->get(k);
+		}
+		else if (val->isArray())
+		{
+			if (!key.isArrayIndex())
+			{
+				// not the right kind
+				invalidValueTwo = Null;
+				return invalidValueTwo;
+			}
+			// get the array and index
+			int k = key.toArrayIndex();
+			JsonArray* arr = &val->toArray();
+			if (k < 0 || k >= arr->count())
+			{
+				// not in range
+				invalidValueTwo = Null;
+				return invalidValueTwo;
+			}
+			// get the value at that index
+			val = &arr->at(k);
+		}
+		else
+		{
+			// not an array/object
+			invalidValueTwo = Null;
+			return invalidValueTwo;
+		}
+	}
+	return *val;
+}
+
+JsonValue& JsonValue::create(JsonPath path)
+{
+	JsonValue* val = this;
+	// follow down the path
+	for (auto key : path)
+	{
+		if (val->isNull() && key.isObjectKey())
+		{
+			// make it an object
+			val->setType(Object);
+		}
+		else if (val->isNull() && key.isArrayIndex())
+		{
+			// make it an array
+			val->setType(Array);
+		}
+
+		if (val->isObject() && key.isObjectKey())
+		{
+			// get and/or make the association
+			val = &val->toObject().get(key.toObjectKey());
+		}
+		else if (val->isArray() && key.isArrayIndex())
+		{
+			JsonArray* arr = &val->toArray();
+			int k = key.toArrayIndex();
+			if (k >= 0 && k < arr->count())
+			{
+				// it exists, so just get it
+				val = &arr->at(k);
+			}
+			else
+			{
+				// create and get the value at that index
+				if (k < 0)
+				{
+					k = 0;
+				}
+				else
+				{
+					k = arr->count();
+				}
+				arr->insert(k, Null);
+				val = &arr->at(k);
+			}
+		}
+		else
+		{
+			// not the right kind of value
+			invalidValueTwo = Null;
+			return invalidValueTwo;
+		}
+	}
+	return *val;
 }
