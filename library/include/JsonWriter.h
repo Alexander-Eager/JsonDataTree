@@ -3,7 +3,7 @@
 
 // for the library
 #include <JsonDataTree/JsonForwards.h>
-#include <JsonDataTree/LibraryMacros.h?
+#include <JsonDataTree/LibraryMacros.h>
 #include <JsonDataTree/JsonValue.h>
 
 // superclass
