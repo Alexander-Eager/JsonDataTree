@@ -1,11 +1,11 @@
 // header file
-#include "JsonWriter.h"
+#include <JsonDataTree/JsonWriter.h>
 
 // internal data
 #include <QSharedData>
 #include <QVariant>
-#include "JsonObject.h"
-#include "JsonArray.h"
+#include <JsonDataTree/JsonObject.h>
+#include <JsonDataTree/JsonArray.h>
 
 // private data class
 namespace JSON

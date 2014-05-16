@@ -1,11 +1,11 @@
 // header file
-#include "JsonReader.h"
+#include <JsonDataTree/JsonReader.h>
 
 // internal data
 #include <QSharedData>
 #include <QVariant>
-#include "JsonObject.h"
-#include "JsonArray.h"
+#include <JsonDataTree/JsonObject.h>
+#include <JsonDataTree/JsonArray.h>
 
 #include <iostream>
 

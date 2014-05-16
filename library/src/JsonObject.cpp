@@ -1,8 +1,8 @@
 // header file
-#include "JsonObject.h"
+#include <JsonDataTree/JsonObject.h>
 
 // JsonValue class
-#include "JsonValue.h"
+#include <JsonDataTree/JsonValue.h>
 
 // internal data
 #include <QSharedData>

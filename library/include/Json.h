@@ -2,11 +2,11 @@
 #define JSON_H
 
 // essentially, this includes all of the JSON classes
-#include "JsonValue.h"
-#include "JsonArray.h"
-#include "JsonObject.h"
-#include "JsonReader.h"
-#include "JsonWriter.h"
-#include "JsonPath.h"
+#include <JsonDataTree/JsonValue.h>
+#include <JsonDataTree/JsonArray.h>
+#include <JsonDataTree/JsonObject.h>
+#include <JsonDataTree/JsonReader.h>
+#include <JsonDataTree/JsonWriter.h>
+#include <JsonDataTree/JsonPath.h>
 
 #endif

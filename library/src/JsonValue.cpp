@@ -1,8 +1,8 @@
 // header file
-#include "JsonValue.h"
+#include <JsonDataTree/JsonValue.h>
 
 // for path following
-#include "JsonPath.h"
+#include <JsonDataTree/JsonPath.h>
 
 // internal data
 #include <QSharedData>

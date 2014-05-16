@@ -2,8 +2,8 @@
 #define JSON_PATH_H
 
 // for the library
-#include "JsonForwards.h"
-#include "LibraryMacros.h"
+#include <JsonDataTree/JsonForwards.h>
+#include <JsonDataTree/LibraryMacros.h>
 
 // superclass
 #include <QObject>

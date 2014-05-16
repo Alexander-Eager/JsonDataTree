@@ -2,11 +2,11 @@
 #define JSON_VALUE_H
 
 // for the library
-#include "JsonForwards.h"
-#include "LibraryMacros.h"
-#include "JsonArray.h"
-#include "JsonObject.h"
-#include "JsonPath.h"
+#include <JsonDataTree/JsonForwards.h>
+#include <JsonDataTree/LibraryMacros.h>
+#include <JsonDataTree/JsonArray.h>
+#include <JsonDataTree/JsonObject.h>
+#include <JsonDataTree/JsonPath.h>
 
 // superclass
 #include <QObject>

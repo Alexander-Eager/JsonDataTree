@@ -10,8 +10,12 @@ INCLUDEPATH += .
 SOURCES += main.cpp
 
 # Additional config
+macx:INCLUDEPATH += /usr/include/
+unix:INCLUDEPATH += /usr/include/
+win32:INCLUDEPATH += /
+
 DEFINES *= QT_USE_QSTRINGBUILDER
 CONFIG += c++11 debug
 CONFIG -= app_bundle
 macx:QMAKE_CXXFLAGS += -mmacosx-version-min=10.7 -std=gnu0x -stdlib=libc+
-QMAKE_LFLAGS += -L. -ljsontree
+macx:QMAKE_LFLAGS += -L/usr/local/lib/ -ljsondatatree

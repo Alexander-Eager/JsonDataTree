@@ -5,8 +5,8 @@
 #include <QObject>
 
 // for the JSON library
-#include "JsonForwards.h"
-#include "LibraryMacros.h"
+#include <JsonDataTree/JsonForwards.h>
+#include <JsonDataTree/LibraryMacros.h>
 
 // for holding data
 #include <QSharedDataPointer>

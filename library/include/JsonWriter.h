@@ -2,9 +2,9 @@
 #define JSON_WRITER_H
 
 // for the library
-#include "JsonForwards.h"
-#include "LibraryMacros.h"
-#include "JsonValue.h"
+#include <JsonDataTree/JsonForwards.h>
+#include <JsonDataTree/LibraryMacros.h?
+#include <JsonDataTree/JsonValue.h>
 
 // superclass
 #include <QObject>

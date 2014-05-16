@@ -1,5 +1,5 @@
 // header file
-#include "JsonPath.h"
+#include <JsonDataTree/JsonPath.h>
 
 // internal data
 #include <QSharedData>
