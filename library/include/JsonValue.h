@@ -437,10 +437,12 @@ namespace JSON
 			 * value is returned.
 			 *
 			 * \param[in] path The path to follow to the desired value.
+			 * \param[out] ok A flag set to `true` if `path` is valid
+			 *					for this value, `false` otherwise.
 			 *
 			 * \returns The value at the end of `path`.
 			 **/
-			virtual JsonValue follow(JsonPath path) const;
+			virtual JsonValue follow(JsonPath path, bool* ok = nullptr) const;
 
 			/**
 			 * \brief Get the value at the end of a path.
@@ -449,10 +451,12 @@ namespace JSON
 			 * value is returned.
 			 *
 			 * \param[in] path The path to follow to the desired value.
+			 * \param[out] ok A flag set to `true` if `path` is valid
+			 *					for this value, `false` otherwise.
 			 *
 			 * \returns The value at the end of `path`.
 			 **/
-			virtual JsonValue& follow(JsonPath path);
+			virtual JsonValue& follow(JsonPath path, bool* ok = nullptr);
 
 			/**
 			 * \brief Create the given path for this value.
@@ -493,10 +497,12 @@ namespace JSON
 			 * not created and a `Null` value is returned.
 			 *
 			 * \param[in] path The path to create.
+			 * \param[out] ok A flag set to `true` if `path` is valid
+			 *					for this value, `false` otherwise.
 			 *
 			 * \returns The value at the end of the newly created path.
 			 **/
-			virtual JsonValue& create(JsonPath path);
+			virtual JsonValue& create(JsonPath path, bool* ok = nullptr);
 
 		private:
 			/** \brief The *d-pointer* for this object. **/

@@ -66,6 +66,16 @@ JsonObject::iterator JsonObject::insert(QString key, JsonValue value)
 	return d->map.insert(key, value);
 }
 
+bool JsonObject::remove(QString key)
+{
+	if (!d->map.contains(key))
+	{
+		return false;
+	}
+	d->map.remove(key);
+	return true;
+}
+
 JsonValue JsonObject::get(QString key) const
 {
 	return d->map[key];

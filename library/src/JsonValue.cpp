@@ -374,7 +374,7 @@ JsonObject JsonValue::toObject(bool* ok) const
 	return JsonObject();
 }
 
-JsonValue JsonValue::follow(JsonPath path) const
+JsonValue JsonValue::follow(JsonPath path, bool* ok) const
 {
 	JsonValue val = *this;
 	// follow down the path
@@ -385,6 +385,7 @@ JsonValue JsonValue::follow(JsonPath path) const
 			if (!key.isObjectKey())
 			{
 				// not the right kind
+				*ok = false;
 				invalidValueTwo = Null;
 				return invalidValueTwo;
 			}
@@ -395,6 +396,7 @@ JsonValue JsonValue::follow(JsonPath path) const
 			{
 				// the association isn't there,
 				// so quit
+				*ok = false;
 				invalidValueTwo = Null;
 				return invalidValueTwo;
 			}
@@ -406,6 +408,7 @@ JsonValue JsonValue::follow(JsonPath path) const
 			if (!key.isArrayIndex())
 			{
 				// not the right kind
+				*ok = false;
 				invalidValueTwo = Null;
 				return invalidValueTwo;
 			}
@@ -415,6 +418,7 @@ JsonValue JsonValue::follow(JsonPath path) const
 			if (k < 0 || k >= arr.count())
 			{
 				// not in range
+				*ok = false;
 				invalidValueTwo = Null;
 				return invalidValueTwo;
 			}
@@ -424,14 +428,16 @@ JsonValue JsonValue::follow(JsonPath path) const
 		else
 		{
 			// not an array/object
+			*ok = false;
 			invalidValueTwo = Null;
 			return invalidValueTwo;
 		}
 	}
+	*ok = true;
 	return val;
 }
 
-JsonValue& JsonValue::follow(JsonPath path)
+JsonValue& JsonValue::follow(JsonPath path, bool* ok)
 {
 	JsonValue* val = this;
 	// follow down the path
@@ -442,6 +448,7 @@ JsonValue& JsonValue::follow(JsonPath path)
 			if (!key.isObjectKey())
 			{
 				// not the right kind
+				*ok = false;
 				invalidValueTwo = Null;
 				return invalidValueTwo;
 			}
@@ -452,6 +459,7 @@ JsonValue& JsonValue::follow(JsonPath path)
 			{
 				// the association isn't there,
 				// so quit
+				*ok = false;
 				invalidValueTwo = Null;
 				return invalidValueTwo;
 			}
@@ -463,6 +471,7 @@ JsonValue& JsonValue::follow(JsonPath path)
 			if (!key.isArrayIndex())
 			{
 				// not the right kind
+				*ok = false;
 				invalidValueTwo = Null;
 				return invalidValueTwo;
 			}
@@ -472,6 +481,7 @@ JsonValue& JsonValue::follow(JsonPath path)
 			if (k < 0 || k >= arr->count())
 			{
 				// not in range
+				*ok = false;
 				invalidValueTwo = Null;
 				return invalidValueTwo;
 			}
@@ -481,14 +491,16 @@ JsonValue& JsonValue::follow(JsonPath path)
 		else
 		{
 			// not an array/object
+			*ok = false;
 			invalidValueTwo = Null;
 			return invalidValueTwo;
 		}
 	}
+	*ok = true;
 	return *val;
 }
 
-JsonValue& JsonValue::create(JsonPath path)
+JsonValue& JsonValue::create(JsonPath path, bool* ok)
 {
 	JsonValue* val = this;
 	// follow down the path
@@ -537,9 +549,11 @@ JsonValue& JsonValue::create(JsonPath path)
 		else
 		{
 			// not the right kind of value
+			*ok = false;
 			invalidValueTwo = Null;
 			return invalidValueTwo;
 		}
 	}
+	*ok = true;
 	return *val;
 }

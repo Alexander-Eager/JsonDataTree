@@ -160,6 +160,19 @@ namespace JSON
 			virtual iterator insert(QString key, JsonValue value);
 
 			/**
+			 * \brief Remove a key from this object.
+			 *
+			 * If `key` does not exist in this object,
+			 * this function returns `false`.
+			 *
+			 * \param[in] key The key to remove.
+			 *
+			 * \returns `true` if this object was changed as a
+			 *			result of this call, `false` otherwise.
+			 **/
+			virtual bool remove(QString key);
+
+			/**
 			 * \brief Get the value for a specific key.
 			 *
 			 * If the key does not exist, this returns a
