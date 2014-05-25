@@ -6,6 +6,8 @@ TEMPLATE = lib
 TARGET = jsondatatree
 INCLUDEPATH += .
 
+CONFIG += debug
+
 # Input
 HEADERS += 
 SOURCES += src/JsonArray.cpp \

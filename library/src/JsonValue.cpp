@@ -385,7 +385,10 @@ JsonValue JsonValue::follow(JsonPath path, bool* ok) const
 			if (!key.isObjectKey())
 			{
 				// not the right kind
-				*ok = false;
+				if (ok)
+				{
+					*ok = false;
+				}
 				invalidValueTwo = Null;
 				return invalidValueTwo;
 			}
@@ -396,7 +399,10 @@ JsonValue JsonValue::follow(JsonPath path, bool* ok) const
 			{
 				// the association isn't there,
 				// so quit
-				*ok = false;
+				if (ok)
+				{
+					*ok = false;
+				}
 				invalidValueTwo = Null;
 				return invalidValueTwo;
 			}
@@ -408,7 +414,10 @@ JsonValue JsonValue::follow(JsonPath path, bool* ok) const
 			if (!key.isArrayIndex())
 			{
 				// not the right kind
-				*ok = false;
+				if (ok)
+				{
+					*ok = false;
+				}
 				invalidValueTwo = Null;
 				return invalidValueTwo;
 			}
@@ -418,7 +427,10 @@ JsonValue JsonValue::follow(JsonPath path, bool* ok) const
 			if (k < 0 || k >= arr.count())
 			{
 				// not in range
-				*ok = false;
+				if (ok)
+				{
+					*ok = false;
+				}
 				invalidValueTwo = Null;
 				return invalidValueTwo;
 			}
@@ -428,12 +440,18 @@ JsonValue JsonValue::follow(JsonPath path, bool* ok) const
 		else
 		{
 			// not an array/object
-			*ok = false;
+			if (ok)
+			{
+				*ok = false;
+			}
 			invalidValueTwo = Null;
 			return invalidValueTwo;
 		}
 	}
-	*ok = true;
+	if (ok)
+	{
+		*ok = true;
+	}
 	return val;
 }
 
@@ -448,7 +466,10 @@ JsonValue& JsonValue::follow(JsonPath path, bool* ok)
 			if (!key.isObjectKey())
 			{
 				// not the right kind
-				*ok = false;
+				if (ok)
+				{
+					*ok = false;
+				}
 				invalidValueTwo = Null;
 				return invalidValueTwo;
 			}
@@ -459,7 +480,10 @@ JsonValue& JsonValue::follow(JsonPath path, bool* ok)
 			{
 				// the association isn't there,
 				// so quit
-				*ok = false;
+				if (ok)
+				{
+					*ok = false;
+				}
 				invalidValueTwo = Null;
 				return invalidValueTwo;
 			}
@@ -471,7 +495,10 @@ JsonValue& JsonValue::follow(JsonPath path, bool* ok)
 			if (!key.isArrayIndex())
 			{
 				// not the right kind
-				*ok = false;
+				if (ok)
+				{
+					*ok = false;
+				}
 				invalidValueTwo = Null;
 				return invalidValueTwo;
 			}
@@ -481,7 +508,10 @@ JsonValue& JsonValue::follow(JsonPath path, bool* ok)
 			if (k < 0 || k >= arr->count())
 			{
 				// not in range
-				*ok = false;
+				if (ok)
+				{
+					*ok = false;
+				}
 				invalidValueTwo = Null;
 				return invalidValueTwo;
 			}
@@ -491,12 +521,18 @@ JsonValue& JsonValue::follow(JsonPath path, bool* ok)
 		else
 		{
 			// not an array/object
-			*ok = false;
+			if (ok)
+			{
+				*ok = false;
+			}
 			invalidValueTwo = Null;
 			return invalidValueTwo;
 		}
 	}
-	*ok = true;
+	if (ok)
+	{
+		*ok = true;
+	}
 	return *val;
 }
 
@@ -549,11 +585,17 @@ JsonValue& JsonValue::create(JsonPath path, bool* ok)
 		else
 		{
 			// not the right kind of value
-			*ok = false;
+			if (ok)
+			{
+				*ok = false;
+			}
 			invalidValueTwo = Null;
 			return invalidValueTwo;
 		}
 	}
-	*ok = true;
+	if (ok)
+	{
+		*ok = true;
+	}
 	return *val;
 }

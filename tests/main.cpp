@@ -45,5 +45,9 @@ int main()
 	writer.setData(val.follow("See you later.number 2"));
 	cout << "See you later.number 2" << endl;
 	cout << writer.string().toStdString() << endl << endl;
+
+	writer.setData(val.follow({"does not exist"}));
+	cout << "does not exist" << endl;
+	cout << writer.string().toStdString() << endl << endl;
 	return 0;
 }
