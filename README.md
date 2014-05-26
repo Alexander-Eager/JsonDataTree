@@ -60,7 +60,7 @@ function. Take this section of code, for example:
 							"\"hello\": {"
 								"\"world\": [5]"
 							"}"
-						"}"
+						"}";
 	JSON::JsonReader reader;
 	JSON::JsonValue val = reader.parse(jsonText);
 	qDebug() << val.follow({"hello", "world", 0}).toInteger();
