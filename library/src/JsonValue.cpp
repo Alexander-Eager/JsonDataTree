@@ -7,6 +7,9 @@
 // internal data
 #include <QSharedData>
 
+// for global variables
+#include <QGlobalStatic>
+
 // JsonValuePrivate internal data class
 namespace JSON
 {
@@ -86,9 +89,9 @@ namespace JSON
 
 using namespace JSON;
 
-JsonArray invalidArray;
-JsonObject invalidObject;
-JsonValue invalidValueTwo;
+Q_GLOBAL_STATIC(JsonArray, invalidArray)
+Q_GLOBAL_STATIC(JsonObject, invalidObject)
+Q_GLOBAL_STATIC(JsonValue, invalidValueTwo)
 
 JsonValue::~JsonValue() { }
 
@@ -125,7 +128,7 @@ void JsonValue::setType(JsonValue::Type type)
 			d->array = new JsonArray();
 			break;
 		case Object:
-			//d->object = new JsonObject();
+			d->object = new JsonObject();
 			break;
 		case String:
 			d->string = new QString();
@@ -325,8 +328,8 @@ JsonArray& JsonValue::toArray(bool* ok)
 	{
 		return *d->array;
 	}
-	invalidArray.clear();
-	return invalidArray;
+	invalidArray->clear();
+	return *invalidArray;
 }
 
 JsonArray JsonValue::toArray(bool* ok) const
@@ -357,8 +360,8 @@ JsonObject& JsonValue::toObject(bool* ok)
 	{
 		return *d->object;
 	}
-	invalidObject.clear();
-	return invalidObject;
+	invalidObject->clear();
+	return *invalidObject;
 }
 
 JsonObject JsonValue::toObject(bool* ok) const
@@ -389,8 +392,7 @@ JsonValue JsonValue::follow(JsonPath path, bool* ok) const
 				{
 					*ok = false;
 				}
-				invalidValueTwo = Null;
-				return invalidValueTwo;
+				return JsonValue::Null;
 			}
 			// get the object and key
 			QString k = key.toObjectKey();
@@ -403,8 +405,7 @@ JsonValue JsonValue::follow(JsonPath path, bool* ok) const
 				{
 					*ok = false;
 				}
-				invalidValueTwo = Null;
-				return invalidValueTwo;
+				return JsonValue::Null;
 			}
 			// get the association's value
 			val = obj.get(k);
@@ -418,8 +419,7 @@ JsonValue JsonValue::follow(JsonPath path, bool* ok) const
 				{
 					*ok = false;
 				}
-				invalidValueTwo = Null;
-				return invalidValueTwo;
+				return JsonValue::Null;
 			}
 			// get the array and index
 			int k = key.toArrayIndex();
@@ -431,8 +431,7 @@ JsonValue JsonValue::follow(JsonPath path, bool* ok) const
 				{
 					*ok = false;
 				}
-				invalidValueTwo = Null;
-				return invalidValueTwo;
+				return JsonValue::Null;
 			}
 			// get the value at that index
 			val = arr.at(k);
@@ -444,8 +443,7 @@ JsonValue JsonValue::follow(JsonPath path, bool* ok) const
 			{
 				*ok = false;
 			}
-			invalidValueTwo = Null;
-			return invalidValueTwo;
+			return JsonValue::Null;
 		}
 	}
 	if (ok)
@@ -470,8 +468,8 @@ JsonValue& JsonValue::follow(JsonPath path, bool* ok)
 				{
 					*ok = false;
 				}
-				invalidValueTwo = Null;
-				return invalidValueTwo;
+				invalidValueTwo->setType(Null);
+				return *invalidValueTwo;
 			}
 			// get the object and key
 			QString k = key.toObjectKey();
@@ -484,8 +482,8 @@ JsonValue& JsonValue::follow(JsonPath path, bool* ok)
 				{
 					*ok = false;
 				}
-				invalidValueTwo = Null;
-				return invalidValueTwo;
+				invalidValueTwo->setType(Null);
+				return *invalidValueTwo;
 			}
 			// get the association's value
 			val = &obj->get(k);
@@ -499,8 +497,8 @@ JsonValue& JsonValue::follow(JsonPath path, bool* ok)
 				{
 					*ok = false;
 				}
-				invalidValueTwo = Null;
-				return invalidValueTwo;
+				invalidValueTwo->setType(Null);
+				return *invalidValueTwo;
 			}
 			// get the array and index
 			int k = key.toArrayIndex();
@@ -512,8 +510,8 @@ JsonValue& JsonValue::follow(JsonPath path, bool* ok)
 				{
 					*ok = false;
 				}
-				invalidValueTwo = Null;
-				return invalidValueTwo;
+				invalidValueTwo->setType(Null);
+				return *invalidValueTwo;
 			}
 			// get the value at that index
 			val = &arr->at(k);
@@ -525,8 +523,8 @@ JsonValue& JsonValue::follow(JsonPath path, bool* ok)
 			{
 				*ok = false;
 			}
-			invalidValueTwo = Null;
-			return invalidValueTwo;
+			invalidValueTwo->setType(Null);
+			return *invalidValueTwo;
 		}
 	}
 	if (ok)
@@ -589,8 +587,8 @@ JsonValue& JsonValue::create(JsonPath path, bool* ok)
 			{
 				*ok = false;
 			}
-			invalidValueTwo = Null;
-			return invalidValueTwo;
+			invalidValueTwo->setType(Null);
+			return *invalidValueTwo;
 		}
 	}
 	if (ok)

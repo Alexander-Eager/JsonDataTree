@@ -8,6 +8,9 @@
 #include <QSharedData>
 #include <QList>
 
+// static vars
+#include <QGlobalStatic>
+
 namespace JSON
 {
 	class JsonArrayPrivate : public QSharedData
@@ -19,7 +22,7 @@ namespace JSON
 
 using namespace JSON;
 
-JsonValue invalidValue;
+Q_GLOBAL_STATIC(JsonValue, invalidValue)
 
 JsonArray::JsonArray()
 	:	d(new JsonArrayPrivate)
@@ -86,8 +89,8 @@ JsonValue& JsonArray::last()
 {
 	if (isEmpty())
 	{
-		invalidValue.setType(JsonValue::Null);
-		return invalidValue;
+		invalidValue->setType(JsonValue::Null);
+		return *invalidValue;
 	}
 	return d->array.last();
 }
@@ -120,8 +123,8 @@ JsonValue& JsonArray::first()
 {
 	if (isEmpty())
 	{
-		invalidValue.setType(JsonValue::Null);
-		return invalidValue;
+		invalidValue->setType(JsonValue::Null);
+		return *invalidValue;
 	}
 	return d->array.first();
 }
@@ -162,8 +165,8 @@ JsonValue& JsonArray::at(int index)
 {
 	if (index < 0 || index >= size())
 	{
-		invalidValue.setType(JsonValue::Null);
-		return invalidValue;
+		invalidValue->setType(JsonValue::Null);
+		return *invalidValue;
 	}
 	return d->array[index];
 }
