@@ -2,7 +2,7 @@
 #define JSON_ARRAY_H
 
 // superclass
-#include <QList>
+#include <QObject>
 
 // for the JSON library
 #include <JsonDataTree/JsonForwards.h>
@@ -19,36 +19,80 @@ namespace JSON
 	/**
 	 * \brief Represents an array of JSON values.
 	 **/
-	class JSON_LIBRARY JsonArray : public QList<JsonValue>
+	class JSON_LIBRARY JsonArray : public QObject
 	{
+		Q_OBJECT
+
+		Q_PROPERTY(int size
+					READ size
+					STORED false)
+		Q_PROPERTY(int count
+					READ count
+					STORED false)
+		Q_PROPERTY(bool empty
+					READ isEmpty
+					STORED false)
+
 		public:
+			/**
+			 * \brief The iterator type.
+			 **/
+			using iterator = QList<JsonValue>::iterator;
+
+			/**
+			 * \brief The constant iterator type.
+			 **/
+			using const_iterator = QList<JsonValue>::const_iterator;
+
+			/**
+			 * \brief For STL compatibility.
+			 **/
+			using const_pointer = QList<JsonArray>::const_pointer;
+
+			/**
+			 * \brief For STL compatibility.
+			 **/
+			using const_reference = QList<JsonArray>::const_reference;
+
+			/**
+			 * \brief For STL compatibility.
+			 **/
+			using difference_type = QList<JsonArray>::difference_type;
+
+			/**
+			 * \brief For STL compatibility.
+			 **/
+			using pointer = QList<JsonArray>::pointer;
+
+			/**
+			 * \brief For STL compatibility.
+			 **/
+			using reference = QList<JsonArray>::reference;
+
+			/**
+			 * \brief For STL compatibility.
+			 **/
+			using size_type = QList<JsonArray>::size_type;
+
+			/**
+			 * \brief For STL compatibility.
+			 **/
+			using value_type = QList<JsonArray>::value_type;
+
+			/**
+			 * \brief The iterator type.
+			 **/
+			using Iterator = QList<JsonValue>::Iterator;
+
+			/**
+			 * \brief The constant iterator type.
+			 **/
+			using ConstIterator = QList<JsonValue>::ConstIterator;
+
 			/**
 			 * \brief Make an empty array.
 			 **/
 			JsonArray();
-
-			/**
-			 * \brief Make a copy of `other`.
-			 *
-			 * \param other The array to copy.
-			 **/
-			JsonArray(const JsonArray& other);
-
-			/**
-			 * \brief Make from a `QList`.
-			 *
-			 * \param list The list to make this
-			 *			array from.
-			 **/
-			JsonArray(const QList<JsonValue>& list);
-
-			/**
-			 * \brief Make from an initializer list.
-			 *
-			 * \param list The list to make this
-			 *			array from.
-			 **/
-			JsonArray(std::initializer_list<JsonValue> list);
 
 			/**
 			 * \brief Destroy this object.
