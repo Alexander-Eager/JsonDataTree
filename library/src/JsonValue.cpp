@@ -107,7 +107,7 @@ JsonValue::JsonValue(const JsonValue& other)
 
 JsonValue& JsonValue::operator= (const JsonValue& other)
 {
-	if (this == &other) return *this;
+	if (d == other.d) return *this;
 	d = other.d;
 	return *this;
 }
@@ -345,6 +345,11 @@ JsonArray JsonValue::toArray(bool* ok) const
 	return JsonArray();
 }
 
+JsonArray JsonValue::constToArray(bool* ok) const
+{
+	return toArray(ok);
+}
+
 bool JsonValue::isObject() const
 {
 	return d->type == Object;
@@ -375,6 +380,92 @@ JsonObject JsonValue::toObject(bool* ok) const
 		return *d->object;
 	}
 	return JsonObject();
+}
+
+JsonObject JsonValue::constToObject(bool* ok) const
+{
+	return toObject(ok);
+}
+
+JsonValue& JsonValue::follow(JsonPath path, bool* ok)
+{
+	JsonValue* val = this;
+	// follow down the path
+	for (auto key : path)
+	{
+		if (val->isObject())
+		{
+			if (!key.isObjectKey())
+			{
+				// not the right kind
+				if (ok)
+				{
+					*ok = false;
+				}
+				invalidValueTwo->setType(Null);
+				return *invalidValueTwo;
+			}
+			// get the object and key
+			QString k = key.toObjectKey();
+			JsonObject* obj = &val->toObject();
+			if (!obj->contains(k))
+			{
+				// the association isn't there,
+				// so quit
+				if (ok)
+				{
+					*ok = false;
+				}
+				invalidValueTwo->setType(Null);
+				return *invalidValueTwo;
+			}
+			// get the association's value
+			val = &obj->operator[] (k);
+		}
+		else if (val->isArray())
+		{
+			if (!key.isArrayIndex())
+			{
+				// not the right kind
+				if (ok)
+				{
+					*ok = false;
+				}
+				invalidValueTwo->setType(Null);
+				return *invalidValueTwo;
+			}
+			// get the array and index
+			int k = key.toArrayIndex();
+			JsonArray* arr = &val->toArray();
+			if (k < 0 || k >= arr->count())
+			{
+				// not in range
+				if (ok)
+				{
+					*ok = false;
+				}
+				invalidValueTwo->setType(Null);
+				return *invalidValueTwo;
+			}
+			// get the value at that index
+			val = &arr->operator[] (k);
+		}
+		else
+		{
+			// not an array/object
+			if (ok)
+			{
+				*ok = false;
+			}
+			invalidValueTwo->setType(Null);
+			return *invalidValueTwo;
+		}
+	}
+	if (ok)
+	{
+		*ok = true;
+	}
+	return *val;
 }
 
 JsonValue JsonValue::follow(JsonPath path, bool* ok) const
@@ -408,7 +499,7 @@ JsonValue JsonValue::follow(JsonPath path, bool* ok) const
 				return JsonValue::Null;
 			}
 			// get the association's value
-			val = obj.get(k);
+			val = obj.value(k);
 		}
 		else if (val.isArray())
 		{
@@ -453,85 +544,9 @@ JsonValue JsonValue::follow(JsonPath path, bool* ok) const
 	return val;
 }
 
-JsonValue& JsonValue::follow(JsonPath path, bool* ok)
+JsonValue JsonValue::constFollow(JsonPath path, bool* ok) const
 {
-	JsonValue* val = this;
-	// follow down the path
-	for (auto key : path)
-	{
-		if (val->isObject())
-		{
-			if (!key.isObjectKey())
-			{
-				// not the right kind
-				if (ok)
-				{
-					*ok = false;
-				}
-				invalidValueTwo->setType(Null);
-				return *invalidValueTwo;
-			}
-			// get the object and key
-			QString k = key.toObjectKey();
-			JsonObject* obj = &val->toObject();
-			if (!obj->contains(k))
-			{
-				// the association isn't there,
-				// so quit
-				if (ok)
-				{
-					*ok = false;
-				}
-				invalidValueTwo->setType(Null);
-				return *invalidValueTwo;
-			}
-			// get the association's value
-			val = &obj->get(k);
-		}
-		else if (val->isArray())
-		{
-			if (!key.isArrayIndex())
-			{
-				// not the right kind
-				if (ok)
-				{
-					*ok = false;
-				}
-				invalidValueTwo->setType(Null);
-				return *invalidValueTwo;
-			}
-			// get the array and index
-			int k = key.toArrayIndex();
-			JsonArray* arr = &val->toArray();
-			if (k < 0 || k >= arr->count())
-			{
-				// not in range
-				if (ok)
-				{
-					*ok = false;
-				}
-				invalidValueTwo->setType(Null);
-				return *invalidValueTwo;
-			}
-			// get the value at that index
-			val = &arr->at(k);
-		}
-		else
-		{
-			// not an array/object
-			if (ok)
-			{
-				*ok = false;
-			}
-			invalidValueTwo->setType(Null);
-			return *invalidValueTwo;
-		}
-	}
-	if (ok)
-	{
-		*ok = true;
-	}
-	return *val;
+	return follow(path, ok);
 }
 
 JsonValue& JsonValue::create(JsonPath path, bool* ok)
@@ -554,7 +569,7 @@ JsonValue& JsonValue::create(JsonPath path, bool* ok)
 		if (val->isObject() && key.isObjectKey())
 		{
 			// get and/or make the association
-			val = &val->toObject().get(key.toObjectKey());
+			val = &val->toObject()[key.toObjectKey()];
 		}
 		else if (val->isArray() && key.isArrayIndex())
 		{
@@ -563,7 +578,7 @@ JsonValue& JsonValue::create(JsonPath path, bool* ok)
 			if (k >= 0 && k < arr->count())
 			{
 				// it exists, so just get it
-				val = &arr->at(k);
+				val = &arr->operator[] (k);
 			}
 			else
 			{
@@ -577,7 +592,7 @@ JsonValue& JsonValue::create(JsonPath path, bool* ok)
 					k = arr->count();
 				}
 				arr->insert(k, Null);
-				val = &arr->at(k);
+				val = &arr->operator[] (k);
 			}
 		}
 		else

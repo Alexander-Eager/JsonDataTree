@@ -3,7 +3,6 @@
 
 // for the library
 #include <JsonDataTree/JsonForwards.h>
-#include <JsonDataTree/LibraryMacros.h>
 
 // superclass
 #include <QObject>

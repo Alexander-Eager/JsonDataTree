@@ -3,10 +3,6 @@
 
 // for the library
 #include <JsonDataTree/JsonForwards.h>
-#include <JsonDataTree/LibraryMacros.h>
-#include <JsonDataTree/JsonArray.h>
-#include <JsonDataTree/JsonObject.h>
-#include <JsonDataTree/JsonPath.h>
 
 // superclass
 #include <QObject>
@@ -85,7 +81,7 @@ namespace JSON
 			/**
 			 * \brief Destroys this object.
 			 **/
-			virtual ~JsonValue();
+			~JsonValue();
 
 			/**
 			 * \brief Construct a invalid reference.
@@ -126,7 +122,7 @@ namespace JSON
 			 *
 			 * \param[in] type The type of value to become.
 			 **/
-			virtual void setType(Type type);
+			void setType(Type type);
 
 			/**
 			 * \brief Make from an integer value.
@@ -140,7 +136,7 @@ namespace JSON
 			 *
 			 * \param[in] val The value to assign to this object.
 			 **/
-			virtual void setInteger(int val);
+			void setInteger(int val);
 
 			/**
 			 * \brief Make from a floating point (`double`) value.
@@ -155,7 +151,7 @@ namespace JSON
 			 *
 			 * \param[in] val The value to assign to this object.
 			 **/
-			virtual void setDouble(double val);
+			void setDouble(double val);
 
 			/**
 			 * \brief Make from a string value.
@@ -169,7 +165,7 @@ namespace JSON
 			 *
 			 * \param[in] val The value to assign to this object.
 			 **/
-			virtual void setString(QString val);
+			void setString(QString val);
 
 			/**
 			 * \brief Make from a string value.
@@ -183,7 +179,7 @@ namespace JSON
 			 *
 			 * \param[in] val The value to assign to this object.
 			 **/
-			virtual void setString(const char* const val);
+			void setString(const char* const val);
 
 			/**
 			 * \brief Make from a boolean value.
@@ -197,7 +193,7 @@ namespace JSON
 			 *
 			 * \param[in] val The value to assign to this object.
 			 **/
-			virtual void setBoolean(bool val);
+			void setBoolean(bool val);
 
 			/**
 			 * \brief Make from an array value.
@@ -211,7 +207,7 @@ namespace JSON
 			 *
 			 * \param[in] val The value to assign to this object.
 			 **/
-			virtual void setArray(JsonArray val);
+			void setArray(JsonArray val);
 
 			/**
 			 * \brief Make from an object value.
@@ -225,14 +221,14 @@ namespace JSON
 			 *
 			 * \param[in] val The value to assign to this object.
 			 **/
-			virtual void setObject(JsonObject val);
+			void setObject(JsonObject val);
 
 			/**
 			 * \brief Get the type of value this object holds.
 			 *
 			 * \returns The type of value this object holds.
 			 **/
-			virtual Type getType() const;
+			Type getType() const;
 
 			/**
 			 * \brief Determine if this is a null value.
@@ -240,7 +236,7 @@ namespace JSON
 			 * \returns `true` if this is a null value,
 			 *			`false` otherwise.
 			 **/
-			virtual bool isNull() const;
+			bool isNull() const;
 
 			/**
 			 * \brief Determine if this is a numeric value.
@@ -251,7 +247,7 @@ namespace JSON
 			 * \returns `true` if this is a numeric value,
 			 *			`false` otherwise.
 			 **/
-			virtual bool isNumber() const;
+			bool isNumber() const;
 
 			/**
 			 * \brief Convert this value to an integer.
@@ -271,7 +267,7 @@ namespace JSON
 			 *
 			 * \returns This value as an integer.
 			 **/
-			virtual int toInteger(bool* ok = nullptr) const;
+			int toInteger(bool* ok = nullptr) const;
 
 			/**
 			 * \brief Convert this value to a `double`.
@@ -290,7 +286,7 @@ namespace JSON
 			 *
 			 * \returns This value as a `double`.
 			 **/
-			virtual double toDouble(bool* ok = nullptr) const;
+			double toDouble(bool* ok = nullptr) const;
 
 			/**
 			 * \brief Determine if this is a string value.
@@ -300,7 +296,7 @@ namespace JSON
 			 * \returns `true` if this is a string value,
 			 *			`false` otherwise.
 			 **/
-			virtual bool isString() const;
+			bool isString() const;
 
 			/**
 			 * \brief Convert this value to a string.
@@ -318,7 +314,7 @@ namespace JSON
 			 *
 			 * \returns This value as a string.
 			 **/
-			virtual QString toString(bool* ok = nullptr) const;
+			QString toString(bool* ok = nullptr) const;
 
 			/**
 			 * \brief Determine if this is a boolean value.
@@ -328,7 +324,7 @@ namespace JSON
 			 * \returns `true` if this is a boolean value,
 			 *			`false` otherwise.
 			 **/
-			virtual bool isBoolean() const;
+			bool isBoolean() const;
 
 			/**
 			 * \brief Convert this value to a boolean.
@@ -346,7 +342,7 @@ namespace JSON
 			 *
 			 * \returns This value as a boolean.
 			 **/
-			virtual bool toBoolean(bool* ok = nullptr) const;
+			bool toBoolean(bool* ok = nullptr) const;
 
 			/**
 			 * \brief Determine if this value is an array.
@@ -356,7 +352,7 @@ namespace JSON
 			 * \returns `true` if this value is an array,
 			 *			`false` otherwise.
 			 **/
-			virtual bool isArray() const;
+			bool isArray() const;
 
 			/**
 			 * \brief Convert this value to an array.
@@ -372,7 +368,7 @@ namespace JSON
 			 *
 			 * \returns This value as an array.
 			 **/
-			virtual JsonArray& toArray(bool* ok = nullptr);
+			JsonArray& toArray(bool* ok = nullptr);
 
 			/**
 			 * \brief Convert this value to an array.
@@ -388,7 +384,23 @@ namespace JSON
 			 *
 			 * \returns This value as an array.
 			 **/
-			virtual JsonArray toArray(bool* ok = nullptr) const;
+			JsonArray toArray(bool* ok = nullptr) const;
+
+			/**
+			 * \brief Convert this value to an array.
+			 *
+			 * If this value is not an array, this returns
+			 * an empty `JsonArray` and sets `*ok` to
+			 * `false`.
+			 *
+			 * \see isArray().
+			 *
+			 * \param[out] ok A flag set to `true` if this value is
+			 *				an array, `false` otherwise.
+			 *
+			 * \returns This value as an array.
+			 **/
+			JsonArray constToArray(bool* ok = nullptr) const;
 
 			/**
 			 * \brief Determine if this value is an object.
@@ -398,7 +410,7 @@ namespace JSON
 			 * \returns `true` if this value is an object,
 			 *			`false` otherwise.
 			 **/
-			virtual bool isObject() const;
+			bool isObject() const;
 
 			/**
 			 * \brief Convert this value to an object.
@@ -413,7 +425,7 @@ namespace JSON
 			 *
 			 * \returns This value as an object.
 			 **/
-			virtual JsonObject& toObject(bool* ok = nullptr);
+			JsonObject& toObject(bool* ok = nullptr);
 
 			/**
 			 * \brief Convert this value to an object.
@@ -428,7 +440,22 @@ namespace JSON
 			 *
 			 * \returns This value as an object.
 			 **/
-			virtual JsonObject toObject(bool* ok = nullptr) const;
+			JsonObject toObject(bool* ok = nullptr) const;
+
+			/**
+			 * \brief Convert this value to an object.
+			 *
+			 * If this value is not an object, this returns
+			 * an empty `JsonObject` and sets `*ok` to `false`.
+			 *
+			 * \see isObject()
+			 *
+			 * \param[out] ok A flag set to `true` if this value is
+			 *				an object, `false` otherwise.
+			 *
+			 * \returns This value as an object.
+			 **/
+			JsonObject constToObject(bool* ok = nullptr) const;
 
 			/**
 			 * \brief Get the value at the end of a path.
@@ -442,7 +469,7 @@ namespace JSON
 			 *
 			 * \returns The value at the end of `path`.
 			 **/
-			virtual JsonValue follow(JsonPath path, bool* ok = nullptr) const;
+			JsonValue& follow(JsonPath path, bool* ok = nullptr);
 
 			/**
 			 * \brief Get the value at the end of a path.
@@ -456,7 +483,21 @@ namespace JSON
 			 *
 			 * \returns The value at the end of `path`.
 			 **/
-			virtual JsonValue& follow(JsonPath path, bool* ok = nullptr);
+			JsonValue follow(JsonPath path, bool* ok = nullptr) const;
+
+			/**
+			 * \brief Get the value at the end of a path.
+			 *
+			 * If the path is not valid for this value, a `Null`
+			 * value is returned.
+			 *
+			 * \param[in] path The path to follow to the desired value.
+			 * \param[out] ok A flag set to `true` if `path` is valid
+			 *					for this value, `false` otherwise.
+			 *
+			 * \returns The value at the end of `path`.
+			 **/
+			JsonValue constFollow(JsonPath path, bool* ok = nullptr) const;
 
 			/**
 			 * \brief Create the given path for this value.
@@ -502,7 +543,7 @@ namespace JSON
 			 *
 			 * \returns The value at the end of the newly created path.
 			 **/
-			virtual JsonValue& create(JsonPath path, bool* ok = nullptr);
+			JsonValue& create(JsonPath path, bool* ok = nullptr);
 
 		private:
 			/** \brief The *d-pointer* for this object. **/

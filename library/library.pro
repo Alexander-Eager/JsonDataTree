@@ -10,9 +10,7 @@ CONFIG += debug
 
 # Input
 HEADERS += 
-SOURCES += src/JsonArray.cpp \
-           src/JsonObject.cpp \
-           src/JsonPath.cpp \
+SOURCES += src/JsonPath.cpp \
            src/JsonReader.cpp \
            src/JsonValue.cpp \
            src/JsonWriter.cpp

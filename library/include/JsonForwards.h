@@ -1,6 +1,10 @@
 #ifndef JSON_FORWARDS_H
 #define JSON_FORWARDS_H
 
+#include <QList>
+#include <QHash>
+#include <JsonDataTree/LibraryMacros.h>
+
 /**
  * \brief Namespace for JSON classes.
  **/
@@ -18,10 +22,10 @@ namespace JSON
 	class JsonValue;
 
 	// JsonObject.h
-	class JsonObject;
+	using JsonObject = QHash<QString, JsonValue>;
 
 	// JsonArray.h
-	class JsonArray;
+	using JsonArray = QList<JsonValue>;
 
 	// JsonPath.h
 	class JsonKey;
