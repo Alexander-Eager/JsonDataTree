@@ -6,7 +6,7 @@ TEMPLATE = lib
 TARGET = jsondatatree
 INCLUDEPATH += .
 
-CONFIG += debug
+CONFIG += release
 
 # Input
 HEADERS += 

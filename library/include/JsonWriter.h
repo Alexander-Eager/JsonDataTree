@@ -25,7 +25,7 @@ namespace JSON
 	/**
 	 * \brief Class used to write JSON data to
 	 *			streams in text format.
-	 **/
+	 */
 	class JSON_LIBRARY JsonWriter : public QObject
 	{
 		Q_OBJECT
@@ -41,7 +41,7 @@ namespace JSON
 			/**
 			 * \brief Construct a JSON writer
 			 *			with null data.
-			 **/
+			 */
 			JsonWriter();
 
 			/**
@@ -49,70 +49,70 @@ namespace JSON
 			 *			write the given data.
 			 *
 			 * \param[in] data The data to write out.
-			 **/
+			 */
 			JsonWriter(JsonValue data);
 
 			/**
 			 * \brief Make a copy of `other`.
 			 *
 			 * \param[in] other The writer to copy.
-			 **/
+			 */
 			JsonWriter(const JsonWriter& other);
 
 			/**
 			 * \brief Destroy this object.
-			 **/
-			virtual ~JsonWriter();
+			 */
+			~JsonWriter();
 
 			/**
 			 * \brief Assign the data of `other` to this
 			 *			object.
 			 *
 			 * \param[in] other The writer to copy.
-			 **/
-			virtual JsonWriter& operator= (const JsonWriter& other);
+			 */
+			auto operator= (const JsonWriter& other) -> JsonWriter&;
 
 			/**
 			 * \brief Get the data that this writer writes out.
 			 *
 			 * \returns The data to be written by this writer.
-			 **/
-			virtual JsonValue getData() const;
+			 */
+			auto getData() const -> JsonValue;
 
 			/**
 			 * \brief Set the data that this writer writes out.
 			 *
 			 * \param[in] data The new data to write.
-			 **/
-			virtual void setData(JsonValue data);
+			 */
+			auto setData(JsonValue data) -> void;
 
 			/**
 			 * \brief Get the data as a string.
 			 *
 			 * \returns The data as a string.
-			 **/
-			virtual QString string() const;
+			 */
+			auto string() const -> QString;
 
 			/**
 			 * \brief Write the data to a string.
 			 *
 			 * \param[out] str The string to write to.
-			 **/
-			virtual void writeTo(QString* str) const;
+			 */
+			auto writeTo(QString* str) const -> void;
 
 			/**
 			 * \brief Write the data to an IO device.
 			 *
 			 * \param[out] io The device to write to.
-			 **/
-			virtual void writeTo(QIODevice* io) const;
+			 */
+			auto writeTo(QIODevice* io) const -> void;
 
 			/**
 			 * \brief Write the data to a text stream.
 			 *
 			 * \param[out] stream The stream to write to.
-			 **/
-			virtual void writeTo(QTextStream& stream) const;
+			 */
+			auto writeTo(QTextStream& stream) const -> void;
 
 		private:
 			QSharedDataPointer<JsonWriterPrivate> d;

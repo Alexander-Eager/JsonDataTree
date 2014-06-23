@@ -11,81 +11,70 @@
 #include <QGlobalStatic>
 
 // JsonValuePrivate internal data class
-namespace JSON
-{
-	class JsonValuePrivate : public QSharedData
-	{
-		public:
-			JsonValue::Type type;
-			union
-			{
-				double number;
-				QString* string;
-				bool boolean;
-				JsonArray* array;
-				JsonObject* object;
-			};
+class JSON::JsonValuePrivate : public QSharedData {
+	public:
+		JsonValue::Type type;
+		union {
+			double number;
+			QString* string;
+			bool boolean;
+			JsonArray* array;
+			JsonObject* object;
+		};
 
-			// deletes necessary objects and resets
-			// the type to Null
-			void clean()
-			{
-				switch (type)
-				{
-					case JsonValue::String:
-						delete string;
-						break;
-					case JsonValue::Array:
-						delete array;
-						break;
-					case JsonValue::Object:
-						delete object;
-						break;
-					default:
-						break;
-				}
-				type = JsonValue::Null;
+		// deletes necessary objects and resets
+		// the type to Null
+		auto clean() -> void {
+			switch (type) {
+				case JsonValue::String:
+					delete string;
+					break;
+				case JsonValue::Array:
+					delete array;
+					break;
+				case JsonValue::Object:
+					delete object;
+					break;
+				default:
+					break;
 			}
+			type = JsonValue::Null;
+		}
 
-			JsonValuePrivate()
-				:	type(JsonValue::Null)
-				{ }
+		JsonValuePrivate()
+			:	type(JsonValue::Null) { }
 
-			~JsonValuePrivate()
-			{
-				clean();
+		~JsonValuePrivate() {
+			clean();
+		}
+
+		JsonValuePrivate(const JsonValuePrivate& other)
+			:	type(other.type) {
+			switch (type) {
+				case JsonValue::Number:
+					number = other.number;
+					break;
+				case JsonValue::Boolean:
+					boolean = other.boolean;
+					break;
+				case JsonValue::String:
+					string = new QString(*other.string);
+					break;
+				case JsonValue::Array:
+					array = new JsonArray(*other.array);
+					break;
+				case JsonValue::Object:
+					object = new JsonObject(*other.object);
+					break;
+				case JsonValue::Null:
+					// nothing to do
+					break;
+				default:
+					// not a defined type
+					break;
 			}
-
-			JsonValuePrivate(const JsonValuePrivate& other)
-				:	type(other.type)
-			{
-				switch (type)
-				{
-					case JsonValue::Number:
-						number = other.number;
-						break;
-					case JsonValue::Boolean:
-						boolean = other.boolean;
-						break;
-					case JsonValue::String:
-						string = new QString(*other.string);
-						break;
-					case JsonValue::Array:
-						array = new JsonArray(*other.array);
-						break;
-					case JsonValue::Object:
-						object = new JsonObject(*other.object);
-						break;
-					case JsonValue::Null:
-						// nothing to do
-						break;
-					default:
-						// not a defined type
-						break;
-				}
-			}
-	};
-}
+		}
+};
 
 using namespace JSON;
 
@@ -96,34 +85,28 @@ Q_GLOBAL_STATIC(JsonValue, invalidValueTwo)
 JsonValue::~JsonValue() { }
 
 JsonValue::JsonValue()
-	:	d(new JsonValuePrivate)
-{
+	:	d(new JsonValuePrivate) {
 	setType(Null);
 }
 
 JsonValue::JsonValue(const JsonValue& other)
-	:	d(other.d)
-	{ }
+	:	d(other.d) { }
 
-JsonValue& JsonValue::operator= (const JsonValue& other)
-{
+auto JsonValue::operator= (const JsonValue& other) -> JsonValue& {
 	if (d == other.d) return *this;
 	d = other.d;
 	return *this;
 }
 
 JsonValue::JsonValue(JsonValue::Type type)
-	:	d(new JsonValuePrivate)
-{
+	:	d(new JsonValuePrivate) {
 	setType(type);
 }
 
-void JsonValue::setType(JsonValue::Type type)
-{
+auto JsonValue::setType(JsonValue::Type type) -> void {
 	d->clean();
 	d->type = type;
-	switch (type)
-	{
+	switch (type) {
 		case Array:
 			d->array = new JsonArray();
 			break;
@@ -150,256 +133,204 @@ void JsonValue::setType(JsonValue::Type type)
 }
 
 JsonValue::JsonValue(int val)
-	:	d(new JsonValuePrivate)
-{
+	:	d(new JsonValuePrivate) {
 	setInteger(val);
 }
 
-void JsonValue::setInteger(int val)
-{
+auto JsonValue::setInteger(int val) -> void {
 	d->clean();
 	d->type = Number;
 	d->number = val;
 }
 
 JsonValue::JsonValue(double val)
-	:	d(new JsonValuePrivate)
-{
+	:	d(new JsonValuePrivate) {
 	setDouble(val);
 }
 
-void JsonValue::setDouble(double val)
-{
+auto JsonValue::setDouble(double val) -> void {
 	d->clean();
 	d->type = Number;
 	d->number = val;
 }
 
 JsonValue::JsonValue(QString val)
-	:	d(new JsonValuePrivate)
-{
+	:	d(new JsonValuePrivate) {
 	setString(val);
 }
 
-void JsonValue::setString(QString val)
-{
+auto JsonValue::setString(QString val) -> void {
 	d->clean();
 	d->type = String;
 	d->string = new QString(val);
 }
 
 JsonValue::JsonValue(const char* const val)
-	:	JsonValue(QString(val))
-	{ }
+	:	JsonValue(QString(val)) { }
 
-void JsonValue::setString(const char* const val)
-{
+auto JsonValue::setString(const char* const val) -> void {
 	setString(QString(val));
 }
 
 JsonValue::JsonValue(bool val)
-	:	d(new JsonValuePrivate)
-{
+	:	d(new JsonValuePrivate) {
 	setBoolean(val);
 }
 
-void JsonValue::setBoolean(bool val)
-{
+auto JsonValue::setBoolean(bool val) -> void {
 	d->clean();
 	d->type = Boolean;
 	d->boolean = val;
 }
 
 JsonValue::JsonValue(JsonArray val)
-	:	d(new JsonValuePrivate)
-{
+	:	d(new JsonValuePrivate) {
 	setArray(val);
 }
 
-void JsonValue::setArray(JsonArray val)
-{
+auto JsonValue::setArray(JsonArray val) -> void {
 	d->clean();
 	d->type = Array;
 	d->array = new JsonArray(val);
 }
 
 JsonValue::JsonValue(JsonObject val)
-	:	d(new JsonValuePrivate)
-{
+	:	d(new JsonValuePrivate) {
 	setObject(val);
 }
 
-void JsonValue::setObject(JsonObject val)
-{
+auto JsonValue::setObject(JsonObject val) -> void {
 	d->clean();
 	d->type = Object;
 	d->object = new JsonObject(val);
 }
 
-JsonValue::Type JsonValue::getType() const
-{
+auto JsonValue::getType() const -> Type {
 	return d->type;
 }
 
-bool JsonValue::isNull() const
-{
+auto JsonValue::isNull() const -> bool {
 	return d->type == Null;
 }
 
-bool JsonValue::isNumber() const
-{
+auto JsonValue::isNumber() const -> bool {
 	return d->type == Number;
 }
 
-int JsonValue::toInteger(bool* ok) const
-{
-	if (ok)
-	{
+auto JsonValue::toInteger(bool* ok) const -> int {
+	if (ok) {
 		*ok = isNumber();
 	}
-	if (isNumber())
-	{
+	if (isNumber()) {
 		return (int) d->number;
 	}
 	return 0;
 }
 
-double JsonValue::toDouble(bool* ok) const
-{
-	if (ok)
-	{
+auto JsonValue::toDouble(bool* ok) const -> double {
+	if (ok) {
 		*ok = isNumber();
 	}
-	if (isNumber())
-	{
+	if (isNumber()) {
 		return d->number;
 	}
 	return 0.0;
 }
 
-bool JsonValue::isString() const
-{
+auto JsonValue::isString() const -> bool {
 	return d->type == String;
 }
 
-QString JsonValue::toString(bool* ok) const
-{
-	if (ok)
-	{
+auto JsonValue::toString(bool* ok) const -> QString {
+	if (ok) {
 		*ok = isString();
 	}
-	if (isString())
-	{
+	if (isString()) {
 		return *d->string;
 	}
 	return QString();
 }
 
-bool JsonValue::isBoolean() const
-{
+auto JsonValue::isBoolean() const -> bool {
 	return d->type == Boolean;
 }
 
-bool JsonValue::toBoolean(bool* ok) const
-{
-	if (ok)
-	{
+auto JsonValue::toBoolean(bool* ok) const -> bool {
+	if (ok) {
 		*ok = isBoolean();
 	}
-	if (isBoolean())
-	{
+	if (isBoolean()) {
 		return d->boolean;
 	}
 	return false;
 }
 
-bool JsonValue::isArray() const
-{
+auto JsonValue::isArray() const -> bool {
 	return d->type == Array;
 }
 
-JsonArray& JsonValue::toArray(bool* ok)
-{
-	if (ok)
-	{
+auto JsonValue::toArray(bool* ok) -> JsonArray& {
+	if (ok) {
 		*ok = isArray();
 	}
-	if (isArray())
-	{
+	if (isArray()) {
 		return *d->array;
 	}
 	invalidArray->clear();
 	return *invalidArray;
 }
 
-JsonArray JsonValue::toArray(bool* ok) const
-{
-	if (ok)
-	{
+auto JsonValue::toArray(bool* ok) const -> JsonArray {
+	if (ok) {
 		*ok = isArray();
 	}
-	if (isArray())
-	{
+	if (isArray()) {
 		return *d->array;
 	}
 	return JsonArray();
 }
 
-JsonArray JsonValue::constToArray(bool* ok) const
-{
+auto JsonValue::constToArray(bool* ok) const -> JsonArray {
 	return toArray(ok);
 }
 
-bool JsonValue::isObject() const
-{
+auto JsonValue::isObject() const -> bool {
 	return d->type == Object;
 }
 
-JsonObject& JsonValue::toObject(bool* ok)
-{
-	if (ok)
-	{
+auto JsonValue::toObject(bool* ok) -> JsonObject& {
+	if (ok) {
 		*ok = isObject();
 	}
-	if (isObject())
-	{
+	if (isObject()) {
 		return *d->object;
 	}
 	invalidObject->clear();
 	return *invalidObject;
 }
 
-JsonObject JsonValue::toObject(bool* ok) const
-{
-	if (ok)
-	{
+auto JsonValue::toObject(bool* ok) const -> JsonObject {
+	if (ok) {
 		*ok = isObject();
 	}
-	if (isObject())
-	{
+	if (isObject()) {
 		return *d->object;
 	}
 	return JsonObject();
 }
 
-JsonObject JsonValue::constToObject(bool* ok) const
-{
+auto JsonValue::constToObject(bool* ok) const -> JsonObject {
 	return toObject(ok);
 }
 
-JsonValue& JsonValue::follow(JsonPath path, bool* ok)
-{
+auto JsonValue::follow(JsonPath path, bool* ok) -> JsonValue& {
 	JsonValue* val = this;
 	// follow down the path
-	for (auto key : path)
-	{
-		if (val->isObject())
-		{
-			if (!key.isObjectKey())
-			{
+	for (auto key : path) {
+		if (val->isObject()) {
+			if (!key.isObjectKey()) {
 				// not the right kind
-				if (ok)
-				{
+				if (ok) {
 					*ok = false;
 				}
 				invalidValueTwo->setType(Null);
@@ -408,12 +339,10 @@ JsonValue& JsonValue::follow(JsonPath path, bool* ok)
 			// get the object and key
 			QString k = key.toObjectKey();
 			JsonObject* obj = &val->toObject();
-			if (!obj->contains(k))
-			{
+			if (!obj->contains(k)) {
 				// the association isn't there,
 				// so quit
-				if (ok)
-				{
+				if (ok) {
 					*ok = false;
 				}
 				invalidValueTwo->setType(Null);
@@ -421,14 +350,10 @@ JsonValue& JsonValue::follow(JsonPath path, bool* ok)
 			}
 			// get the association's value
 			val = &obj->operator[] (k);
-		}
-		else if (val->isArray())
-		{
-			if (!key.isArrayIndex())
-			{
+		} else if (val->isArray()) {
+			if (!key.isArrayIndex()) {
 				// not the right kind
-				if (ok)
-				{
+				if (ok) {
 					*ok = false;
 				}
 				invalidValueTwo->setType(Null);
@@ -437,11 +362,9 @@ JsonValue& JsonValue::follow(JsonPath path, bool* ok)
 			// get the array and index
 			int k = key.toArrayIndex();
 			JsonArray* arr = &val->toArray();
-			if (k < 0 || k >= arr->count())
-			{
+			if (k < 0 || k >= arr->count()) {
 				// not in range
-				if (ok)
-				{
+				if (ok) {
 					*ok = false;
 				}
 				invalidValueTwo->setType(Null);
@@ -449,38 +372,29 @@ JsonValue& JsonValue::follow(JsonPath path, bool* ok)
 			}
 			// get the value at that index
 			val = &arr->operator[] (k);
-		}
-		else
-		{
+		} else {
 			// not an array/object
-			if (ok)
-			{
+			if (ok) {
 				*ok = false;
 			}
 			invalidValueTwo->setType(Null);
 			return *invalidValueTwo;
 		}
 	}
-	if (ok)
-	{
+	if (ok) {
 		*ok = true;
 	}
 	return *val;
 }
 
-JsonValue JsonValue::follow(JsonPath path, bool* ok) const
-{
+auto JsonValue::follow(JsonPath path, bool* ok) const -> JsonValue {
 	JsonValue val = *this;
 	// follow down the path
-	for (auto key : path)
-	{
-		if (val.isObject())
-		{
-			if (!key.isObjectKey())
-			{
+	for (auto key : path) {
+		if (val.isObject()) {
+			if (!key.isObjectKey()) {
 				// not the right kind
-				if (ok)
-				{
+				if (ok) {
 					*ok = false;
 				}
 				return JsonValue::Null;
@@ -488,26 +402,20 @@ JsonValue JsonValue::follow(JsonPath path, bool* ok) const
 			// get the object and key
 			QString k = key.toObjectKey();
 			JsonObject obj = val.toObject();
-			if (!obj.contains(k))
-			{
+			if (!obj.contains(k)) {
 				// the association isn't there,
 				// so quit
-				if (ok)
-				{
+				if (ok) {
 					*ok = false;
 				}
 				return JsonValue::Null;
 			}
 			// get the association's value
 			val = obj.value(k);
-		}
-		else if (val.isArray())
-		{
-			if (!key.isArrayIndex())
-			{
+		} else if (val.isArray()) {
+			if (!key.isArrayIndex()) {
 				// not the right kind
-				if (ok)
-				{
+				if (ok) {
 					*ok = false;
 				}
 				return JsonValue::Null;
@@ -515,99 +423,74 @@ JsonValue JsonValue::follow(JsonPath path, bool* ok) const
 			// get the array and index
 			int k = key.toArrayIndex();
 			JsonArray arr = val.toArray();
-			if (k < 0 || k >= arr.count())
-			{
+			if (k < 0 || k >= arr.count()) {
 				// not in range
-				if (ok)
-				{
+				if (ok) {
 					*ok = false;
 				}
 				return JsonValue::Null;
 			}
 			// get the value at that index
 			val = arr.at(k);
-		}
-		else
-		{
+		} else {
 			// not an array/object
-			if (ok)
-			{
+			if (ok) {
 				*ok = false;
 			}
 			return JsonValue::Null;
 		}
 	}
-	if (ok)
-	{
+	if (ok) {
 		*ok = true;
 	}
 	return val;
 }
 
-JsonValue JsonValue::constFollow(JsonPath path, bool* ok) const
-{
+auto JsonValue::constFollow(JsonPath path, bool* ok) const -> JsonValue {
 	return follow(path, ok);
 }
 
-JsonValue& JsonValue::create(JsonPath path, bool* ok)
-{
+auto JsonValue::create(JsonPath path, bool* ok) -> JsonValue& {
 	JsonValue* val = this;
 	// follow down the path
-	for (auto key : path)
-	{
-		if (val->isNull() && key.isObjectKey())
-		{
+	for (auto key : path) {
+		if (val->isNull() && key.isObjectKey()) {
 			// make it an object
 			val->setType(Object);
-		}
-		else if (val->isNull() && key.isArrayIndex())
-		{
+		} else if (val->isNull() && key.isArrayIndex()) {
 			// make it an array
 			val->setType(Array);
 		}
 
-		if (val->isObject() && key.isObjectKey())
-		{
+		if (val->isObject() && key.isObjectKey()) {
 			// get and/or make the association
 			val = &val->toObject()[key.toObjectKey()];
-		}
-		else if (val->isArray() && key.isArrayIndex())
-		{
+		} else if (val->isArray() && key.isArrayIndex()) {
 			JsonArray* arr = &val->toArray();
 			int k = key.toArrayIndex();
-			if (k >= 0 && k < arr->count())
-			{
+			if (k >= 0 && k < arr->count()) {
 				// it exists, so just get it
 				val = &arr->operator[] (k);
-			}
-			else
-			{
+			} else {
 				// create and get the value at that index
-				if (k < 0)
-				{
+				if (k < 0) {
 					k = 0;
-				}
-				else
-				{
+				} else {
 					k = arr->count();
 				}
 				arr->insert(k, Null);
 				val = &arr->operator[] (k);
 			}
-		}
-		else
-		{
+		} else {
 			// not the right kind of value
-			if (ok)
-			{
+			if (ok) {
 				*ok = false;
 			}
 			invalidValueTwo->setType(Null);
 			return *invalidValueTwo;
 		}
 	}
-	if (ok)
-	{
+	if (ok) {
 		*ok = true;
 	}
 	return *val;

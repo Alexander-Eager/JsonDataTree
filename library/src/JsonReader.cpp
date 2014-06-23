@@ -10,63 +10,53 @@
 #include <iostream>
 
 // private data class
-namespace JSON
-{
-	class JsonReaderPrivate : public QSharedData
-	{
-		public:
-			// read a value from the stream
-			JsonValue readValue(QTextStream& stream, JsonReaderErrors* errors) const;
+class JSON::JsonReaderPrivate : public QSharedData {
+	public:
+		// read a value from the stream
+		auto readValue(QTextStream& stream, JsonReaderErrors* errors) const -> JsonValue;
 
-			// read a string from the stream
-			QString readString(QTextStream& stream, JsonReaderErrors* errors) const;
+		// read a string from the stream
+		auto readString(QTextStream& stream, JsonReaderErrors* errors) const -> QString;
 
-			// read a number from the stream
-			double readNumber(QTextStream& stream, JsonReaderErrors* errors) const;
+		// read a number from the stream
+		auto readNumber(QTextStream& stream, JsonReaderErrors* errors) const -> double;
 
-			// read an array from the stream
-			JsonArray readArray(QTextStream& stream, JsonReaderErrors* errors) const;
+		// read an array from the stream
+		auto readArray(QTextStream& stream, JsonReaderErrors* errors) const -> JsonArray;
 
-			// read an object from the stream
-			JsonObject readObject(QTextStream& stream, JsonReaderErrors* errors) const;
+		// read an object from the stream
+		auto readObject(QTextStream& stream, JsonReaderErrors* errors) const -> JsonObject;
 
-			// skip over comments and white space
-			void skipNonData(QTextStream& stream, JsonReaderErrors* errors) const;
+		// skip over comments and white space
+		auto skipNonData(QTextStream& stream, JsonReaderErrors* errors) const -> void;
 
-			// TODO read comments?
-	};
-}
+		// TODO read comments?
+};
 
 using namespace JSON;
 
 JsonReader::JsonReader()
-	:	d(new JsonReaderPrivate)
-	{ }
+	:	d(new JsonReaderPrivate) { }
 
 JsonReader::~JsonReader() { }
 
 JsonReader::JsonReader(const JsonReader& other)
-	:	d(other.d)
-	{ }
+	:	d(other.d) { }
 
-JsonValue JsonReader::parse(QString string, JsonReaderErrors* errors) const
-{
+auto JsonReader::parse(QString string, JsonReaderErrors* errors) const -> JsonValue {
 	QTextStream stream(&string);
 	return read(stream, errors);
 }
 
-JsonValue JsonReader::read(QIODevice* io, JsonReaderErrors* errors) const
-{
+auto JsonReader::read(QIODevice* io, JsonReaderErrors* errors) const -> JsonValue {
 	QTextStream stream(io);
 	return read(stream, errors);
 }
 
-JsonValue JsonReader::read(QTextStream& stream, JsonReaderErrors* errors) const
-{
+auto JsonReader::read(QTextStream& stream, JsonReaderErrors* errors) const -> JsonValue {
 	// skip preceding white space and comments
 	d->skipNonData(stream, errors);
-	if (errors && errors->numErrors())
-	{
+	if (errors && errors->numErrors()) {
 		return JsonValue::Null;
 	}
 	stream.setIntegerBase(10);
@@ -76,19 +66,16 @@ JsonValue JsonReader::read(QTextStream& stream, JsonReaderErrors* errors) const
 	return ans;
 }
 
-JsonValue JsonReaderPrivate::readValue(QTextStream& stream,
-								JsonReaderErrors* errors) const
-{
+auto JsonReaderPrivate::readValue(QTextStream& stream,
+								  JsonReaderErrors* errors) const -> JsonValue {
 	// get the first character
 	QChar firstChar;
 	stream >> firstChar;
 	ushort c = firstChar.unicode();
 	int offset = stream.pos();
 	// but move back, because it could be important
-	if (!stream.seek(stream.pos() - 1))
-	{
-		if (errors)
-		{
+	if (!stream.seek(stream.pos() - 1)) {
+		if (errors) {
 			errors->addError(JsonReaderError::StreamFailure,
 								offset);
 		}
@@ -96,8 +83,7 @@ JsonValue JsonReaderPrivate::readValue(QTextStream& stream,
 	}
 	// determine what to do based on that char
 	JsonValue ans;
-	switch (c)
-	{
+	switch (c) {
 		case '{': // object
 			ans = readObject(stream, errors);
 			break;
@@ -114,41 +100,31 @@ JsonValue JsonReaderPrivate::readValue(QTextStream& stream,
 			ans = readNumber(stream, errors);
 			break;
 		case 'f': // false
-			if (stream.read(5) == "false")
-			{
+			if (stream.read(5) == "false") {
 				ans = false;
-			}
-			else if (errors)
-			{
+			} else if (errors) {
 				errors->addError(JsonReaderError::UnknownLiteral,
 									offset);
 			}
 			break;
 		case 't': // true
-			if (stream.read(4) == "true")
-			{
+			if (stream.read(4) == "true") {
 				ans = true;
-			}
-			else if (errors)
-			{
+			} else if (errors) {
 				errors->addError(JsonReaderError::UnknownLiteral,
 									offset);
 			}
 			break;
 		case 'n': // null
-			if (stream.read(4) == "null")
-			{
+			if (stream.read(4) == "null") {
 				ans = JsonValue::Null;
-			}
-			else if (errors)
-			{
+			} else if (errors) {
 				errors->addError(JsonReaderError::UnknownLiteral,
 									offset);
 			}
 			break;
 		default: // unrecognizable
-			if (errors)
-			{
+			if (errors) {
 				errors->addError(JsonReaderError::UnknownLiteral,
 									offset);
 			}
@@ -157,19 +133,16 @@ JsonValue JsonReaderPrivate::readValue(QTextStream& stream,
 	return ans;
 }
 
-QString JsonReaderPrivate::readString(QTextStream& stream,
-								JsonReaderErrors* errors) const
-{
+auto JsonReaderPrivate::readString(QTextStream& stream,
+								   JsonReaderErrors* errors) const -> QString {
 	int offset = stream.pos();
 	QString ans;
 	QTextStream output(&ans);
 	QChar curr;
 	stream >> curr;
-	if (stream.status())
-	{
+	if (stream.status()) {
 		// error after reading the first quote
-		if (errors)
-		{
+		if (errors) {
 			errors->addError(JsonReaderError::StreamFailure,
 								offset);
 		}
@@ -177,16 +150,13 @@ QString JsonReaderPrivate::readString(QTextStream& stream,
 	}
 	// get the next character afterward
 	stream >> curr;
-	while (!stream.status() && curr != '\"')
-	{
+	while (!stream.status() && curr != '\"') {
 		ushort c = curr.unicode();
-		switch (c)
-		{
+		switch (c) {
 			case '\\':
 				stream >> curr;
 				c = curr.unicode();
-				switch (c)
-				{
+				switch (c) {
 					case '\"': // single quote
 						output << QChar('\"');
 						break;
@@ -216,10 +186,8 @@ QString JsonReaderPrivate::readString(QTextStream& stream,
 						bool good;
 						int hexOffset = stream.pos();
 						ushort number = stream.read(4).toInt(&good, 16);
-						if (!good)
-						{
-							if (errors)
-							{
+						if (!good) {
+							if (errors) {
 								errors->addError(JsonReaderError::StringWithBadHex,
 													hexOffset);
 							}
@@ -242,8 +210,7 @@ QString JsonReaderPrivate::readString(QTextStream& stream,
 
 	// if we didn't reach the end of the string,
 	// signal the error
-	if (curr != '\"' && errors)
-	{
+	if (curr != '\"' && errors) {
 		errors->addError(JsonReaderError::StringWithNoClosingQuote,
 							offset);
 	}
@@ -251,23 +218,20 @@ QString JsonReaderPrivate::readString(QTextStream& stream,
 	return ans;
 }
 
-double JsonReaderPrivate::readNumber(QTextStream& stream,
-										JsonReaderErrors* errors) const
-{
+auto JsonReaderPrivate::readNumber(QTextStream& stream,
+								   JsonReaderErrors* errors) const -> double {
 	int offset = stream.pos();
 	double ans;
 	stream >> ans;
-	if (stream.status() && !stream.atEnd() && errors)
-	{
+	if (stream.status() && !stream.atEnd() && errors) {
 		errors->addError(JsonReaderError::NumberWithBadCharacter,
 							offset);
 	}
 	return ans;
 }
 
-JsonArray JsonReaderPrivate::readArray(QTextStream& stream,
-										JsonReaderErrors* errors) const
-{
+auto JsonReaderPrivate::readArray(QTextStream& stream,
+								  JsonReaderErrors* errors) const -> JsonArray {
 	JsonArray ans;
 
 	// get rid of the first [
@@ -277,21 +241,17 @@ JsonArray JsonReaderPrivate::readArray(QTextStream& stream,
 
 	// now skip white space and comments
 	skipNonData(stream, errors);
-	if (errors && errors->numErrors())
-	{
+	if (errors && errors->numErrors()) {
 		return ans;
 	}
 
 	// check for empty array
 	stream >> curr;
-	if (curr == ']')
-	{
+	if (curr == ']') {
 		return ans;
 	}
-	if (!stream.seek(stream.pos() - 1))
-	{
-		if (errors)
-		{
+	if (!stream.seek(stream.pos() - 1)) {
+		if (errors) {
 			errors->addError(JsonReaderError::StreamFailure,
 								stream.pos());
 		}
@@ -299,8 +259,7 @@ JsonArray JsonReaderPrivate::readArray(QTextStream& stream,
 	}
 
 	// read in values until the ]
-	while (!stream.status())
-	{
+	while (!stream.status()) {
 		// now skip white space/comments
 		skipNonData(stream, errors);
 		if (errors && errors->numErrors()) return ans;
@@ -316,42 +275,33 @@ JsonArray JsonReaderPrivate::readArray(QTextStream& stream,
 
 		// get the next character
 		stream >> curr;
-		if (curr == ',')
-		{
+		if (curr == ',') {
 			// skip to the next value
 			skipNonData(stream, errors);
 			if (errors && errors->numErrors()) return ans;
 
 			// get the next char
 			stream >> curr;
-			if (curr == ']')
-			{
+			if (curr == ']') {
 				// , and ] can't happen next to each other
-				if (errors)
-				{
+				if (errors) {
 					errors->addError(JsonReaderError::ArrayWithExtraComma,
 										stream.pos());
 				}
 				return ans;
 			}
-			if (!stream.seek(stream.pos() - 1))
-			{
-				if (errors)
-				{
+			if (!stream.seek(stream.pos() - 1)) {
+				if (errors) {
 					errors->addError(JsonReaderError::StreamFailure,
 										stream.pos());
 				}
 				return ans;
 			}
-		}
-		else
-		{
-			if (curr != ']')
-			{
+		} else {
+			if (curr != ']') {
 				// wasn't a separator,
 				// so we had to be done
-				if (errors)
-				{
+				if (errors) {
 					errors->addError(JsonReaderError::ArrayWithNoClosingBracket,
 										arrayStart);
 				}
@@ -360,10 +310,8 @@ JsonArray JsonReaderPrivate::readArray(QTextStream& stream,
 			break;
 		}
 		// move back, since that char is important
-		if (!stream.seek(stream.pos() - 1))
-		{
-			if (errors)
-			{
+		if (!stream.seek(stream.pos() - 1)) {
+			if (errors) {
 				errors->addError(JsonReaderError::StreamFailure,
 									stream.pos());
 			}
@@ -374,9 +322,8 @@ JsonArray JsonReaderPrivate::readArray(QTextStream& stream,
 	return ans;
 }
 
-JsonObject JsonReaderPrivate::readObject(QTextStream& stream,
-											JsonReaderErrors* errors) const
-{
+auto JsonReaderPrivate::readObject(QTextStream& stream,
+								   JsonReaderErrors* errors) const -> JsonObject {
 	JsonObject ans;
 	
 	// get rid of the first {
@@ -390,14 +337,11 @@ JsonObject JsonReaderPrivate::readObject(QTextStream& stream,
 
 	// check for empty object
 	stream >> curr;
-	if (curr == '}')
-	{
+	if (curr == '}') {
 		return ans;
 	}
-	if (!stream.seek(stream.pos() - 1))
-	{
-		if (errors)
-		{
+	if (!stream.seek(stream.pos() - 1)) {
+		if (errors) {
 			errors->addError(JsonReaderError::StreamFailure,
 								stream.pos());
 		}
@@ -405,8 +349,7 @@ JsonObject JsonReaderPrivate::readObject(QTextStream& stream,
 	}
 
 	// read in values until the }
-	while (!stream.status())
-	{
+	while (!stream.status()) {
 		// now skip white space/comments
 		skipNonData(stream, errors);
 		if (errors && errors->numErrors()) return ans;
@@ -421,10 +364,8 @@ JsonObject JsonReaderPrivate::readObject(QTextStream& stream,
 
 		// read in the :
 		stream >> curr;
-		if (curr != ':')
-		{
-			if (errors)
-			{
+		if (curr != ':') {
+			if (errors) {
 				errors->addError(JsonReaderError::ObjectWithMissingColon,
 									stream.pos());
 			}
@@ -448,63 +389,49 @@ JsonObject JsonReaderPrivate::readObject(QTextStream& stream,
 
 		// check the next character
 		stream >> curr;
-		if (curr == ',')
-		{
+		if (curr == ',') {
 			// now skip white space/comments
 			skipNonData(stream, errors);
 			if (errors && errors->numErrors()) return ans;
 
 			// check the next character
 			stream >> curr;
-			if (curr == '}')
-			{
+			if (curr == '}') {
 				// , and } can't happen next to each other
-				if (errors)
-				{
+				if (errors) {
 					errors->addError(JsonReaderError::ObjectWithExtraComma,
 										stream.pos());
 				}
 				return ans;
 			}
-			if (!stream.seek(stream.pos() - 1))
-			{
-				if (errors)
-				{
+			if (!stream.seek(stream.pos() - 1)) {
+				if (errors) {
 					errors->addError(JsonReaderError::StreamFailure,
 										stream.pos());
 				}
 				return ans;
 			}
-		}
-		else
-		{
-			if (curr != '}')
-			{
+		} else {
+			if (curr != '}') {
 				// since there was no comma,
 				// we had to be done
-				if (errors)
-				{
+				if (errors) {
 					errors->addError(JsonReaderError::ObjectWithNoClosingBrace,
 										objectStart);
 				}
 			}
 			break;
 		}
-		if (curr != '\"')
-		{
+		if (curr != '\"') {
 			// has to be a string
-			if (errors)
-			{
+			if (errors) {
 				errors->addError(JsonReaderError::ObjectWithNonStringKey,
 									stream.pos());
 			}
 			return ans;
-		}
-		// move back, since that char is important
-		else if (!stream.seek(stream.pos() - 1))
-		{
-			if (errors)
-			{
+		} else if (!stream.seek(stream.pos() - 1)) {
+			// move back, since that char is important 
+			if (errors) {
 				errors->addError(JsonReaderError::StreamFailure,
 									stream.pos());
 			}
@@ -515,49 +442,39 @@ JsonObject JsonReaderPrivate::readObject(QTextStream& stream,
 	return ans;
 }
 
-void JsonReaderPrivate::skipNonData(QTextStream& stream,
-									JsonReaderErrors* errors) const
-{
+auto JsonReaderPrivate::skipNonData(QTextStream& stream,
+									JsonReaderErrors* errors) const -> void {
 	// skip preceding whitespace
 	stream.skipWhiteSpace();
 	int commentStart = stream.pos();
 	QChar curr;
 	stream >> curr;
-	while (!stream.status() && curr == '/')
-	{
+	while (!stream.status() && curr == '/') {
 		// get the comment type
 		stream >> curr;
-		if (curr == '/') // single line comment
-		{
+		if (curr == '/') {
+			// single line comment
 			// skip over the line
 			stream.readLine();
-		}
-		else if (curr == '*') /* block comment */
-		{
+		} else if (curr == '*') {
+			/* block comment */ 
 			// go until after the trailing */
 			QChar lastOne;
 			stream >> lastOne;
 			bool quitWell = false;
-			while (!stream.status())
-			{
-				if (lastOne == '*')
-				{
+			while (!stream.status()) {
+				if (lastOne == '*') {
 					stream >> lastOne;
-					if (lastOne == '/')
-					{
+					if (lastOne == '/') {
 						quitWell = true;
 						break;
 					}
-				}
-				else
-				{
+				} else {
 					stream >> lastOne;
 				}
 			}
-			if (!quitWell)
-			{
-				if (errors)
-				{
+			if (!quitWell) {
+				if (errors) {
 					errors->addError(JsonReaderError::CommentWithNoEnd,
 										commentStart);
 				}
@@ -569,10 +486,8 @@ void JsonReaderPrivate::skipNonData(QTextStream& stream,
 		stream >> curr;
 	}
 	// unget the last char
-	if (!stream.seek(stream.pos() - 1))
-	{
-		if (errors)
-		{
+	if (!stream.seek(stream.pos() - 1)) {
+		if (errors) {
 			errors->addError(JsonReaderError::StreamFailure,
 								stream.pos());
 		}
@@ -581,24 +496,19 @@ void JsonReaderPrivate::skipNonData(QTextStream& stream,
 
 // The rest of this deals with the specifics of the error classes
 
-namespace JSON
-{
-	class JsonReaderErrorPrivate : public QSharedData
-	{
-		public:
-			JsonReaderError::ErrorType type;
-			int offset;
-			QString message;
+class JSON::JsonReaderErrorPrivate : public QSharedData {
+	public:
+		JsonReaderError::ErrorType type;
+		int offset;
+		QString message;
 
-			static const QString messages[16];
-	};
+		static const QString messages[16];
+};
 
-	class JsonReaderErrorsPrivate : public QSharedData
-	{
-		public:
-			QList<JsonReaderError> errors;
-	};
-}
+class JSON::JsonReaderErrorsPrivate : public QSharedData {
+	public:
+		QList<JsonReaderError> errors;
+};
 
 const QString JsonReaderErrorPrivate::messages[16] = {
 	"No Error; offset %1 specified",
@@ -622,8 +532,7 @@ const QString JsonReaderErrorPrivate::messages[16] = {
 
 JsonReaderError::JsonReaderError(JsonReaderError::ErrorType type,
 									int offset)
-	:	d(new JsonReaderErrorPrivate)
-{
+	:	d(new JsonReaderErrorPrivate) {
 	d->type = type;
 	d->offset = offset;
 	d->message = d->messages[type].arg(QString::number(offset));
@@ -632,78 +541,65 @@ JsonReaderError::JsonReaderError(JsonReaderError::ErrorType type,
 JsonReaderError::~JsonReaderError() { }
 
 JsonReaderError::JsonReaderError(const JsonReaderError& other)
-	:	d(other.d)
-	{ }
+	:	d(other.d) { }
 
-JsonReaderError& JsonReaderError::operator= (const JsonReaderError& other)
-{
+auto JsonReaderError::operator= (const JsonReaderError& other) -> JsonReaderError& {
 	if (this == &other) return *this;
 	d = other.d;
 	return *this;
 }
 
-JsonReaderError::ErrorType JsonReaderError::type() const
-{
+auto JsonReaderError::type() const -> ErrorType {
 	return d->type;
 }
 
-QString JsonReaderError::message() const
-{
+auto JsonReaderError::message() const -> QString {
 	return d->message;
 }
 
-int JsonReaderError::offset() const
-{
+auto JsonReaderError::offset() const -> int {
 	return d->offset;
 }
 
 JsonReaderErrors::JsonReaderErrors()
-	:	d(new JsonReaderErrorsPrivate)
-	{ }
+	:	d(new JsonReaderErrorsPrivate) { }
 
 JsonReaderErrors::~JsonReaderErrors() { }
 
 JsonReaderErrors::JsonReaderErrors(const JsonReaderErrors& other)
-	:	d(other.d)
-	{ }
+	:	d(other.d) { }
 
-JsonReaderErrors& JsonReaderErrors::operator= (const JsonReaderErrors& other)
-{
-	if (this == &other) return *this;
-	d = other.d;
+auto JsonReaderErrors::operator= (const JsonReaderErrors& other) -> JsonReaderErrors& {
+    if (d == other.d) {
+        return *this;
+    }
+    d = other.d;
 	return *this;
 }
 
-int JsonReaderErrors::numErrors() const
-{
+auto JsonReaderErrors::numErrors() const -> int {
 	return d->errors.count();
 }
 
-JsonReaderError JsonReaderErrors::get(int i) const
-{
-	if (i < 0 || i >= numErrors())
-	{
+auto JsonReaderErrors::get(int i) const -> JsonReaderError {
+	if (i < 0 || i >= numErrors()) {
 		return JsonReaderError(JsonReaderError::NoError, -1);
 	}
 	return d->errors.at(i);
 }
 
-JsonReaderErrors::const_iterator JsonReaderErrors::begin() const
-{
+auto JsonReaderErrors::begin() const -> const_iterator {
 	return d->errors.begin();
 }
 
-JsonReaderErrors::const_iterator JsonReaderErrors::end() const
-{
+auto JsonReaderErrors::end() const -> const_iterator {
 	return d->errors.end();
 }
 
-void JsonReaderErrors::addError(JsonReaderError error)
-{
+auto JsonReaderErrors::addError(JsonReaderError error) -> void {
 	d->errors.append(error);
 }
 
-void JsonReaderErrors::addError(JsonReaderError::ErrorType type, int offset)
-{
+auto JsonReaderErrors::addError(JsonReaderError::ErrorType type, int offset) -> void {
 	addError(JsonReaderError(type, offset));
 }

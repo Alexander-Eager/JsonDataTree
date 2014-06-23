@@ -27,6 +27,7 @@
 Makefile*
 .qmake*
 moc_*
+*.pro.user
 
 # My tests
 tests/tests
