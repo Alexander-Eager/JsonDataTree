@@ -44,6 +44,24 @@ JsonPath::JsonPath(const JsonPath& other)
 
 JsonPath::~JsonPath() { }
 
+auto JsonPath::length() const -> int {
+    return count();
+}
+
+auto JsonPath::trimmed(int start, int end) const -> JsonPath {
+    if (start < 0) {
+        start = 0;
+    }
+    if (end > length()) {
+        end = length();
+    }
+    JsonPath ans;
+    for (int i = start; i < end; ++ i) {
+        ans << at(i);
+    }
+    return ans;
+}
+
 auto JsonPath::operator= (const JsonPath& other) -> JsonPath& {
     if (d == other.d) {
         return *this;

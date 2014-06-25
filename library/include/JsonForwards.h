@@ -1,8 +1,14 @@
 #ifndef JSON_FORWARDS_H
 #define JSON_FORWARDS_H
 
-#include <QList>
-#include <QHash>
+template <class T>
+class QList;
+
+template <class K, class V>
+class QHash;
+
+class QString;
+
 #include <JsonDataTree/LibraryMacros.h>
 
 /**

@@ -13,22 +13,28 @@
 class JSON::JsonReaderPrivate : public QSharedData {
 	public:
 		// read a value from the stream
-		auto readValue(QTextStream& stream, JsonReaderErrors* errors) const -> JsonValue;
+        auto readValue(QTextStream& stream, JsonReaderErrors* errors) const
+            -> JsonValue;
 
 		// read a string from the stream
-		auto readString(QTextStream& stream, JsonReaderErrors* errors) const -> QString;
+        auto readString(QTextStream& stream, JsonReaderErrors* errors) const
+            -> QString;
 
 		// read a number from the stream
-		auto readNumber(QTextStream& stream, JsonReaderErrors* errors) const -> double;
+        auto readNumber(QTextStream& stream, JsonReaderErrors* errors) const
+            -> double;
 
 		// read an array from the stream
-		auto readArray(QTextStream& stream, JsonReaderErrors* errors) const -> JsonArray;
+        auto readArray(QTextStream& stream, JsonReaderErrors* errors) const
+            -> JsonArray;
 
 		// read an object from the stream
-		auto readObject(QTextStream& stream, JsonReaderErrors* errors) const -> JsonObject;
+        auto readObject(QTextStream& stream, JsonReaderErrors* errors) const
+            -> JsonObject;
 
 		// skip over comments and white space
-		auto skipNonData(QTextStream& stream, JsonReaderErrors* errors) const -> void;
+        auto skipNonData(QTextStream& stream, JsonReaderErrors* errors) const
+            -> void;
 
 		// TODO read comments?
 };
